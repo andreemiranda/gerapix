@@ -1,0 +1,53 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --color-pix-purple: #7000FF;
+  --color-pix-green: #32BCAD;
+}
+
+@layer base {
+  body {
+    @apply bg-slate-50 text-slate-900 font-sans antialiased;
+  }
+}
+
+.pix-gradient {
+  background: linear-gradient(135deg, #7000FF 0%, #5200CC 100%);
+}
+
+.pix-card {
+  @apply bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden;
+}
+
+@keyframes pulse-green {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.animate-copy-success {
+  animation: pulse-green 0.3s ease-in-out;
+}
+
+@layer utilities {
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-slate-200 rounded-full;
+  }
+}
+
+@media print {
+  nav, .no-print { display: none !important; }
+  .print-only { display: block !important; }
+  body { background: white; padding: 0; margin: 0; }
+  .pix-card { box-shadow: none !important; border: 1px solid #eee !important; margin: 0 auto; width: 100% !important; max-width: none !important; }
+  .pix-gradient { background: #7000FF !important; -webkit-print-color-adjust: exact; }
+  main { padding: 0 !important; margin: 0 !important; }
+}

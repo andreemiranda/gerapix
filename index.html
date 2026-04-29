@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Título e descrição -->
+    <title>GeraPix — Gerador de QR Code PIX</title>
+    <meta name="description" content="Gere cobranças PIX instantaneamente via QR Code ou código Copia e Cola. Plataforma segura com painel administrativo." />
+    <meta name="author" content="GeraPix" />
+    <meta name="keywords" content="PIX, QR Code, pagamento instantâneo, BACEN, gerador de pix" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="192x192" href="/logo192.png" />
+
+    <!-- PWA -->
+    <link rel="manifest" href="/site.webmanifest" />
+    <meta name="theme-color" content="#7000FF" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="GeraPix" />
+
+    <!-- Open Graph (compartilhamento em redes sociais) -->
+    <meta property="og:title" content="GeraPix — Gerador de QR Code PIX" />
+    <meta property="og:description" content="Gere cobranças PIX instantaneamente via QR Code ou código Copia e Cola." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/logo512.png" />
+    <meta property="og:locale" content="pt_BR" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="GeraPix — Gerador de QR Code PIX" />
+    <meta name="twitter:description" content="Gere cobranças PIX instantaneamente via QR Code." />
+
+    <!-- Google Fonts com preconnect para performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet" />
+  </head>
+  <body>
+    <noscript>
+      <p style="font-family:sans-serif;text-align:center;padding:2rem;">
+        O GeraPix requer JavaScript habilitado para funcionar.
+      </p>
+    </noscript>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

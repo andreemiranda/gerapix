@@ -1,0 +1,6 @@
+{
+  "name": "GeraPix",
+  "description": "Plataforma completa para geração de cobranças PIX com painel administrativo seguro e interface pública responsiva.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}

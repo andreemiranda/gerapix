@@ -1,0 +1,78 @@
+{
+  "entities": {
+    "ConfigPix": {
+      "title": "Configuração PIX",
+      "description": "Configurações globais para geração do QR Code PIX",
+      "type": "object",
+      "properties": {
+        "tipo_chave": {
+          "type": "string",
+          "enum": ["cpf_cnpj", "email", "telefone", "aleatoria"],
+          "description": "Tipo da chave PIX"
+        },
+        "chave_pix": {
+          "type": "string",
+          "description": "A chave PIX propriamente dita"
+        },
+        "identificador": {
+          "type": "string",
+          "description": "Identificador da transação (TXID)"
+        },
+        "merchant_name": {
+          "type": "string",
+          "description": "Nome do recebedor"
+        },
+        "merchant_city": {
+          "type": "string",
+          "description": "Cidade do recebedor"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["tipo_chave", "chave_pix"]
+    },
+    "AdminUser": {
+      "title": "Usuário Administrador",
+      "description": "Dados do usuário administrador",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string" },
+        "username": { "type": "string" },
+        "role": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["email", "role"]
+    },
+    "Transaction": {
+      "title": "Transação PIX",
+      "description": "Log de geração de QR Code",
+      "type": "object",
+      "properties": {
+        "payload": { "type": "string" },
+        "amount": { "type": "number" },
+        "identificador": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      }
+    }
+  },
+  "firestore": {
+    "/config/settings": {
+      "schema": "ConfigPix",
+      "description": "Configurações únicas do sistema"
+    },
+    "/admins/{uid}": {
+      "schema": "AdminUser",
+      "description": "Usuários com acesso ao painel admin"
+    },
+    "/transactions/{id}": {
+      "schema": "Transaction",
+      "description": "Histórico de transações"
+    },
+    "/admins_invitations/{email}": {
+      "schema": "AdminUser",
+      "description": "Convites pendentes para administradores"
+    }
+  }
+}

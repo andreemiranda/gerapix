@@ -1,0 +1,28 @@
+{
+  "name": "GeraPix — Gerador de QR Code PIX",
+  "short_name": "GeraPix",
+  "description": "Gere cobranças PIX via QR Code instantaneamente",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#7000FF",
+  "orientation": "portrait-primary",
+  "lang": "pt-BR",
+  "icons": [
+    { "src": "/favicon.svg",  "sizes": "any",     "type": "image/svg+xml", "purpose": "any maskable" },
+    { "src": "/logo192.png",  "sizes": "192x192", "type": "image/png" },
+    { "src": "/logo512.png",  "sizes": "512x512", "type": "image/png" }
+  ],
+  "shortcuts": [
+    {
+      "name": "Gerar PIX",
+      "url": "/",
+      "icons": [{ "src": "/logo192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Painel Admin",
+      "url": "/admin",
+      "icons": [{ "src": "/logo192.png", "sizes": "192x192" }]
+    }
+  ]
+}
