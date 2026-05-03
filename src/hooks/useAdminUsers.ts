@@ -11,6 +11,10 @@ export function useAdminUsers() {
     const unsub = onSnapshot(collection(db, 'admins'), (snap) => {
       setAdmins(snap.docs.map(doc => ({ uid: doc.id, ...doc.data() } as AdminUser)));
       setLoading(false);
+    }, (err) => {
+      console.error("Error observing admin status:", err);
+      // We don't throw here to avoid crashing the hook, but we stop loading
+      setLoading(false);
     });
 
     return () => unsub();

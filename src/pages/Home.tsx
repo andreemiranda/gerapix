@@ -107,7 +107,9 @@ export default function Home() {
   }
 
   return (
-    <div className="flex-1 w-full flex flex-col items-center justify-center p-4 bg-slate-50 font-sans py-12">
+    <div className="flex-1 w-full flex flex-col items-center justify-center p-4 py-12"
+      style={{ background: 'radial-gradient(ellipse 80% 60% at 50% 0%, rgba(112,0,255,0.05) 0%, transparent 70%), #f8f9fc' }}
+    >
       <motion.div 
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -115,63 +117,74 @@ export default function Home() {
       >
         {/* Store Info UX #3 */}
         <div className="mb-6 flex flex-col items-center">
-          <div className="flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-sm border border-slate-100 mb-2">
+          <div className="flex items-center gap-2 px-4 py-2 glass-badge rounded-full mb-2">
+            <span className="w-2 h-2 rounded-full bg-pix-green animate-pulse" />
             <ShoppingBag className="w-4 h-4 text-pix-purple" />
             <span className="text-sm font-bold text-slate-800">{config?.merchant_name || 'Estabelecimento'}</span>
           </div>
         </div>
 
-        <div className="pix-card p-6 sm:p-8">
-          <div className="flex items-center gap-4 mb-6 sm:mb-8">
-            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-pix-purple/10 text-pix-purple rounded-xl flex items-center justify-center shrink-0">
-              <QrCode className="w-5 h-5 sm:w-6 sm:h-6" />
-            </div>
-            <div className="min-w-0">
-              <h1 className="text-xl sm:text-2xl font-bold text-slate-800 truncate">Gerar PIX</h1>
-              <p className="text-slate-500 text-xs sm:text-sm truncate">Informe o valor da cobrança</p>
-            </div>
-          </div>
-
-          <form onSubmit={handleGenerate} className="space-y-4 sm:space-y-6">
-            <div className="space-y-2">
-              <label className="text-xs sm:text-sm font-semibold text-slate-700 ml-1">
-                Valor Total
-              </label>
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-medium text-lg">
-                  R$
-                </span>
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  placeholder="0,00"
-                  value={amount}
-                  onChange={handleAmountChange}
-                  className="w-full bg-slate-50 border border-slate-200 rounded-xl px-12 py-3 sm:py-4 text-xl sm:text-2xl font-bold focus:outline-none focus:ring-2 focus:ring-pix-purple/20 focus:border-pix-purple transition-all"
-                />
-              </div>
-              <p className="text-[9px] sm:text-[10px] text-slate-400 font-bold uppercase tracking-wider ml-1">
-                Deixe em branco para valor livre
-              </p>
-            </div>
-
-            <button
-              type="submit"
-              className="w-full bg-pix-purple/10 text-pix-purple border border-pix-purple/10 font-bold py-3 sm:py-4 rounded-xl shadow-lg shadow-pix-purple/5 hover:bg-pix-purple hover:text-white hover:shadow-pix-purple/20 hover:-translate-y-0.5 active:scale-[0.98] transition-all flex items-center justify-center gap-2 group"
-            >
-              <span className="text-sm sm:text-base">Gerar QR Code PIX</span>
-              <svg
-                viewBox="0 0 24 24"
-                className="w-4 h-4 sm:w-5 sm:h-5 fill-current group-hover:rotate-12 transition-transform"
-                xmlns="http://www.w3.org/2000/svg"
+        <div className="pix-card relative">
+          <div className="h-1 w-full bg-gradient-to-r from-pix-purple via-violet-400 to-pix-green" />
+          <div className="p-6 sm:p-8">
+            <div className="flex items-center gap-4 mb-6 sm:mb-8">
+              <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
+                style={{ background: 'linear-gradient(135deg, rgba(112,0,255,0.15), rgba(112,0,255,0.05))' }}
               >
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-2.12c-1.39-.17-1.89-1.07-1.93-1.85h.92c.03.3.18.91.95.91.81 0 .96-.34.96-.54 0-.41-.53-.54-.93-.72-.45-.19-1-.44-1-1.12 0-.61.42-1.07 1-1.22V8.5h1v2.12c1.39.17 1.89-1.07 1.93-1.85h-.92c-.03-.3-.18-.91-.95-.91-.81 0-.96.34-.96.54 0 .41.53.54.91.72.45.19 1 .44 1 1.12 0 .61-.42 1.07-1 1.22v1.84h-1z" />
-              </svg>
-            </button>
-          </form>
+                <QrCode className="w-6 h-6 text-pix-purple" />
+              </div>
+              <div className="min-w-0">
+                <h1 className="text-xl sm:text-2xl font-black text-slate-800 truncate">Gerar PIX</h1>
+                <p className="text-slate-500 text-xs sm:text-sm truncate">Informe o valor da cobrança</p>
+              </div>
+            </div>
+
+            <form onSubmit={handleGenerate} className="space-y-4 sm:space-y-6">
+              <div className="space-y-2">
+                <label className="text-xs sm:text-sm font-bold text-slate-700 ml-1">
+                  Valor Total
+                </label>
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-lg">
+                    R$
+                  </span>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    placeholder="0,00"
+                    value={amount}
+                    onChange={handleAmountChange}
+                    className="w-full bg-slate-50/80 border border-slate-200 rounded-xl px-12 py-4 text-2xl font-bold
+                      focus:outline-none focus:ring-2 focus:ring-pix-purple/25 focus:border-pix-purple/50
+                      focus:bg-white transition-all shadow-inner"
+                  />
+                </div>
+                <p className="text-[9px] sm:text-[10px] text-slate-400 font-bold uppercase tracking-wider ml-1">
+                  Deixe em branco para valor livre
+                </p>
+              </div>
+
+              <button
+                type="submit"
+                className="w-full bg-pix-purple text-white font-bold py-4 rounded-xl
+                  hover:-translate-y-0.5 hover:shadow-lg active:scale-[0.98]
+                  transition-all flex items-center justify-center gap-2 group"
+                style={{ boxShadow: 'var(--shadow-purple)' }}
+              >
+                <span className="text-sm sm:text-base">Gerar QR Code PIX</span>
+                <svg
+                  viewBox="0 0 24 24"
+                  className="w-4 h-4 sm:w-5 sm:h-5 fill-current group-hover:rotate-12 transition-transform"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-2.12c-1.39-.17-1.89-1.07-1.93-1.85h.92c.03.3.18.91.95.91.81 0 .96-.34.96-.54 0-.41-.53-.54-.93-.72-.45-.19-1-.44-1-1.12 0-.61.42-1.07 1-1.22V8.5h1v2.12c1.39.17 1.89-1.07 1.93-1.85h-.92c-.03-.3-.18-.91-.95-.91-.81 0-.96.34-.96.54 0 .41.53.54.91.72.45.19 1 .44 1 1.12 0 .61-.42 1.07-1 1.22v1.84h-1z" />
+                </svg>
+              </button>
+            </form>
+          </div>
         </div>
 
-        <div className="mt-6 sm:mt-8 flex items-center justify-center gap-4 sm:gap-6">
+        <div className="mt-8 glass-badge rounded-2xl px-6 py-3 flex items-center justify-center gap-8">
           <div className="flex flex-col items-center gap-1">
             <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-pix-green/10 flex items-center justify-center">
               <svg className="w-4 h-4 sm:w-5 sm:h-5 text-pix-green" fill="none" viewBox="0 0 24 24" stroke="currentColor">

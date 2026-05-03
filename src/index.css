@@ -1,10 +1,15 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Sora", ui-sans-serif, system-ui, sans-serif;
   --color-pix-purple: #7000FF;
   --color-pix-green: #32BCAD;
+}
+
+:root {
+  --shadow-card: 0 4px 24px rgba(112, 0, 255, 0.06), 0 1px 4px rgba(0,0,0,0.04);
+  --shadow-purple: 0 8px 32px rgba(112, 0, 255, 0.18);
 }
 
 @layer base {
@@ -14,11 +19,36 @@
 }
 
 .pix-gradient {
-  background: linear-gradient(135deg, #7000FF 0%, #5200CC 100%);
+  background: linear-gradient(135deg, #7000FF 0%, #4D00B8 60%, #3A0090 100%);
 }
 
 .pix-card {
-  @apply bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden;
+  @apply bg-white rounded-2xl border overflow-hidden;
+  border-color: rgba(112, 0, 255, 0.08);
+  box-shadow: var(--shadow-card);
+}
+
+.pix-card-dark {
+  background: #0f0a1a;
+  border: 1px solid rgba(112, 0, 255, 0.15);
+  @apply rounded-2xl overflow-hidden;
+}
+
+.glass-badge {
+  background: rgba(112, 0, 255, 0.08);
+  border: 1px solid rgba(112, 0, 255, 0.15);
+  backdrop-filter: blur(8px);
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
 }
 
 @keyframes pulse-green {

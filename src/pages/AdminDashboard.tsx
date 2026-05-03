@@ -2,7 +2,7 @@ import { useState, useEffect, FormEvent } from 'react';
 import { db, auth } from '../lib/firebase';
 import { handleFirestoreError } from '../lib/firestoreErrorHandler';
 import { PixConfig, PixKeyType, OperationType } from '../types';
-import { doc, setDoc, collection, getDocs, serverTimestamp, query, orderBy, limit } from 'firebase/firestore';
+import { doc, setDoc, collection, getDocs, serverTimestamp, query, orderBy, where, Timestamp } from 'firebase/firestore';
 import { usePixConfig } from '../context/PixConfigContext';
 import { useAdminUsers } from '../hooks/useAdminUsers';
 import { motion } from 'motion/react';
@@ -46,7 +46,16 @@ export default function AdminDashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const txSnap = await getDocs(query(collection(db, 'transactions'), orderBy('timestamp', 'desc'), limit(20)));
+        const sixtyDaysAgo = new Date();
+        sixtyDaysAgo.setDate(sixtyDaysAgo.getDate() - 60);
+
+        const txSnap = await getDocs(
+          query(
+            collection(db, 'transactions'),
+            orderBy('timestamp', 'desc'),
+            where('timestamp', '>=', Timestamp.fromDate(sixtyDaysAgo))
+          )
+        );
         setTransactions(txSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
       } catch (err) {
         console.error("Error fetching admin data:", err);
@@ -137,8 +146,11 @@ export default function AdminDashboard() {
     <div className="flex-1 w-full flex flex-col space-y-6 px-4 py-8 max-w-6xl mx-auto">
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 shrink-0 px-2 lg:px-0">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800">Painel Administrativo</h1>
-          <p className="text-slate-500 text-sm">Gerencie as configurações do seu sistema PIX</p>
+          <div className="flex items-center gap-2 mb-1">
+            <div className="w-1 h-6 bg-pix-purple rounded-full" />
+            <h1 className="text-2xl font-bold text-slate-800">Painel Administrativo</h1>
+          </div>
+          <p className="text-slate-500 text-sm pl-3">Gerencie as configurações do seu sistema PIX</p>
         </div>
         <div className="flex items-center gap-2 px-3 py-1 bg-pix-purple/10 text-pix-purple rounded-full text-[10px] font-bold uppercase tracking-wider self-start sm:self-auto">
           <UserCheck className="w-3.5 h-3.5" />
@@ -166,6 +178,7 @@ export default function AdminDashboard() {
         {/* PIX Settings */}
         <div className="lg:col-span-2 space-y-6">
           <section className="pix-card">
+            <div className="h-0.5 w-full bg-gradient-to-r from-pix-purple/60 to-transparent" />
             <div className="p-4 border-b border-slate-100 flex items-center gap-2">
               <Settings className="w-5 h-5 text-pix-purple" />
               <h2 className="font-bold text-slate-800">Configuração das Chaves PIX (Recebedor)</h2>
@@ -177,7 +190,7 @@ export default function AdminDashboard() {
                   <select 
                     value={config.tipo_chave}
                     onChange={(e) => setConfig({ ...config, tipo_chave: e.target.value as PixKeyType })}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-pix-purple/20 focus:border-pix-purple outline-none transition-all"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-pix-purple/20 focus:shadow-[0_0_0_3px_rgba(112,0,255,0.08)] outline-none transition-all"
                   >
                     <option value="cpf_cnpj">CPF/CNPJ</option>
                     <option value="email">E-mail</option>
@@ -197,7 +210,7 @@ export default function AdminDashboard() {
                     value={config.chave_pix}
                     onChange={(e) => setConfig({ ...config, chave_pix: e.target.value })}
                     required
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-pix-purple/20 focus:border-pix-purple outline-none transition-all"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-pix-purple/20 focus:shadow-[0_0_0_3px_rgba(112,0,255,0.08)] outline-none transition-all"
                   />
                 </div>
               </div>
@@ -210,7 +223,7 @@ export default function AdminDashboard() {
                     maxLength={25}
                     value={config.identificador}
                     onChange={(e) => setConfig({ ...config, identificador: e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '') })}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-pix-purple/20 focus:border-pix-purple outline-none transition-all"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-pix-purple/20 focus:shadow-[0_0_0_3px_rgba(112,0,255,0.08)] outline-none transition-all"
                   />
                 </div>
                 <div className="space-y-1">
@@ -220,7 +233,7 @@ export default function AdminDashboard() {
                     maxLength={15}
                     value={config.merchant_city}
                     onChange={(e) => setConfig({ ...config, merchant_city: e.target.value })}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-pix-purple/20 focus:border-pix-purple outline-none transition-all"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-pix-purple/20 focus:shadow-[0_0_0_3px_rgba(112,0,255,0.08)] outline-none transition-all"
                   />
                 </div>
               </div>
@@ -237,7 +250,7 @@ export default function AdminDashboard() {
                     maxLength={25}
                     value={config.merchant_name}
                     onChange={(e) => setConfig({ ...config, merchant_name: e.target.value })}
-                    className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-pix-purple/20 focus:border-pix-purple outline-none transition-all"
+                    className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-pix-purple/20 focus:shadow-[0_0_0_3px_rgba(112,0,255,0.08)] outline-none transition-all"
                   />
                 </div>
               </div>
@@ -245,7 +258,8 @@ export default function AdminDashboard() {
               <button
                 type="submit"
                 disabled={saving}
-                className="w-full flex items-center justify-center gap-2 bg-pix-purple/10 text-pix-purple border border-pix-purple/10 hover:bg-pix-purple hover:text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-pix-purple/5 disabled:opacity-50 active:scale-95"
+                className="w-full flex items-center justify-center gap-2 bg-pix-purple text-white font-bold py-3 rounded-xl transition-all disabled:opacity-50 active:scale-95"
+                style={{ boxShadow: 'var(--shadow-purple)' }}
               >
                 {saving ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : <Save className="w-5 h-5" />}
                 Salvar Todas as Configurações
@@ -255,19 +269,22 @@ export default function AdminDashboard() {
 
           {/* Transaction History Improvement #3 */}
           <section className="pix-card">
+            <div className="h-0.5 w-full bg-gradient-to-r from-pix-purple/60 to-transparent" />
             <div className="p-4 border-b border-slate-100 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <Clock className="w-5 h-5 text-pix-purple" />
                 <h2 className="font-bold text-slate-800">Últimas Transações</h2>
               </div>
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest bg-slate-50 px-2 py-1 rounded">Log 20 itens</span>
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest bg-slate-50 px-2 py-1 rounded">
+                Últimos 60 dias · {transactions.length} registros
+              </span>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-left">
                 <thead className="bg-slate-50 border-b border-slate-100">
                   <tr>
                     <th className="px-4 py-3 text-[10px] font-bold text-slate-400 uppercase">Data/Hora</th>
-                    <th className="px-4 py-3 text-[10px] font-bold text-slate-400 uppercase">ID</th>
+                    <th className="px-4 py-3 text-[10px] font-bold text-slate-400 uppercase">ID Transação</th>
                     <th className="px-4 py-3 text-[10px] font-bold text-slate-400 uppercase text-right">Valor</th>
                   </tr>
                 </thead>
@@ -278,15 +295,23 @@ export default function AdminDashboard() {
                     </tr>
                   ) : (
                     transactions.map(tx => (
-                      <tr key={tx.id} className="hover:bg-slate-50/50 transition-colors">
+                      <tr key={tx.id} 
+                        className={cn(
+                          "hover:bg-slate-50/70 transition-colors",
+                          (!tx.amount || tx.amount === 0) && "bg-amber-50/30"
+                        )}
+                      >
                         <td className="px-4 py-3 text-[11px] text-slate-600 font-medium">
                           {tx.timestamp?.toDate().toLocaleString('pt-BR')}
                         </td>
                         <td className="px-4 py-3 text-[11px] font-mono text-slate-500 uppercase">
                           {tx.identificador}
                         </td>
-                        <td className="px-4 py-3 text-[11px] font-bold text-slate-800 text-right">
-                          R$ {tx.amount?.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                        <td className="px-4 py-3 text-[11px] font-bold text-right">
+                          {tx.amount > 0
+                            ? <span className="text-slate-800">R$ {tx.amount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+                            : <span className="text-amber-600 text-[10px] font-bold uppercase tracking-wide">Valor livre</span>
+                          }
                         </td>
                       </tr>
                     ))
@@ -300,6 +325,7 @@ export default function AdminDashboard() {
         {/* User Management */}
         <div className="space-y-6">
           <section className="pix-card">
+            <div className="h-0.5 w-full bg-gradient-to-r from-pix-purple/60 to-transparent" />
             <div className="p-4 border-b border-slate-100 flex items-center gap-2">
               <Users className="w-5 h-5 text-pix-purple" />
               <h2 className="font-bold text-slate-800">Convidar Admin</h2>
@@ -314,7 +340,7 @@ export default function AdminDashboard() {
                     placeholder="E-mail do administrador"
                     value={newAdminEmail}
                     onChange={(e) => setNewAdminEmail(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 py-2 text-xs outline-none focus:border-pix-purple focus:ring-1 focus:ring-pix-purple/10"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 py-2 text-xs outline-none focus:border-pix-purple focus:ring-2 focus:ring-pix-purple/10 focus:shadow-[0_0_0_3px_rgba(112,0,255,0.08)] transition-all"
                   />
                 </div>
               </div>
@@ -327,7 +353,7 @@ export default function AdminDashboard() {
                     placeholder="Nome de exibição"
                     value={newAdminName}
                     onChange={(e) => setNewAdminName(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 py-2 text-xs outline-none focus:border-pix-purple focus:ring-1 focus:ring-pix-purple/10"
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 py-2 text-xs outline-none focus:border-pix-purple focus:ring-2 focus:ring-pix-purple/10 focus:shadow-[0_0_0_3px_rgba(112,0,255,0.08)] transition-all"
                   />
                 </div>
               </div>
@@ -342,6 +368,7 @@ export default function AdminDashboard() {
           </section>
 
           <section className="pix-card">
+            <div className="h-0.5 w-full bg-gradient-to-r from-pix-purple/60 to-transparent" />
             <div className="p-4 border-b border-slate-100 flex items-center gap-2">
               <UserCheck className="w-5 h-5 text-pix-purple" />
               <h2 className="font-bold text-slate-800">Equipe Ativa</h2>

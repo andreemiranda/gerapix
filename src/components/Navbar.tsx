@@ -1,7 +1,13 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { User } from 'firebase/auth';
 import { LogOut, Grid, Home, User as UserIcon } from 'lucide-react';
 import { signOut, auth } from '../lib/firebase';
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
+function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
 
 interface NavbarProps {
   user: User | null;
@@ -10,17 +16,21 @@ interface NavbarProps {
 
 export default function Navbar({ user, isAdmin }: NavbarProps) {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = async () => {
     await signOut(auth);
     navigate('/');
   };
 
+  const isActive = (path: string) => location.pathname === path;
+
   return (
-    <nav className="bg-white border-b border-slate-100 px-4 py-4 sticky top-0 z-50 shadow-sm no-print">
+    <nav className="bg-white/95 backdrop-blur-md border-b border-slate-200/60 px-4 py-4 sticky top-0 z-50 shadow-sm no-print">
       <div className="container mx-auto max-w-4xl flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-pix-purple flex items-center justify-center">
+        <Link to="/" className="flex items-center gap-2 group">
+          <div className="w-8 h-8 rounded-lg bg-pix-purple flex items-center justify-center ring-1 ring-pix-purple/20 transition-transform group-hover:scale-105"
+               style={{ background: 'linear-gradient(135deg, #7000FF 0%, #4D00B8 100%)' }}>
             <svg
               viewBox="0 0 24 24"
               className="w-5 h-5 text-white fill-current"
@@ -34,40 +44,57 @@ export default function Navbar({ user, isAdmin }: NavbarProps) {
           </span>
         </Link>
 
-        <div className="flex items-center gap-2 sm:gap-4">
+        <div className="flex items-center gap-1 sm:gap-2">
           <Link
             to="/"
-            className="p-2 text-slate-500 hover:text-pix-purple hover:bg-slate-50 rounded-lg transition-colors flex items-center gap-2"
+            className={cn(
+              "p-2 rounded-xl transition-all flex items-center gap-2",
+              isActive('/') 
+                ? "bg-pix-purple/8 text-pix-purple" 
+                : "text-slate-500 hover:text-pix-purple hover:bg-slate-50"
+            )}
           >
             <Home className="w-5 h-5" />
-            <span className="hidden sm:inline text-sm font-medium">Início</span>
+            <span className="hidden sm:inline text-sm font-bold">Início</span>
           </Link>
 
           {isAdmin && (
             <Link
               to="/admin"
-              className="p-2 text-slate-500 hover:text-pix-purple hover:bg-slate-50 rounded-lg transition-colors flex items-center gap-2"
+              className={cn(
+                "p-2 rounded-xl transition-all flex items-center gap-2",
+                isActive('/admin') 
+                  ? "bg-pix-purple/8 text-pix-purple" 
+                  : "text-slate-500 hover:text-pix-purple hover:bg-slate-50"
+              )}
             >
               <Grid className="w-5 h-5" />
-              <span className="hidden sm:inline text-sm font-medium">Painel</span>
+              <span className="hidden sm:inline text-sm font-bold">Painel</span>
             </Link>
           )}
+
+          <div className="w-px h-4 bg-slate-200 mx-1" />
 
           {user ? (
             <button
               onClick={handleLogout}
-              className="p-2 text-slate-500 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors flex items-center gap-2"
+              className="p-2 text-slate-500 hover:text-red-600 hover:bg-red-50 hover:border hover:border-red-100 rounded-xl transition-all flex items-center gap-2"
             >
               <LogOut className="w-5 h-5" />
-              <span className="hidden sm:inline text-sm font-medium">Sair</span>
+              <span className="hidden sm:inline text-sm font-bold">Sair</span>
             </button>
           ) : (
             <Link
               to="/login"
-              className="p-2 text-slate-500 hover:text-pix-purple hover:bg-slate-50 rounded-lg transition-colors flex items-center gap-2"
+              className={cn(
+                "p-2 rounded-xl transition-all flex items-center gap-2",
+                isActive('/login') 
+                  ? "bg-pix-purple/8 text-pix-purple" 
+                  : "text-slate-500 hover:text-pix-purple hover:bg-slate-50"
+              )}
             >
               <UserIcon className="w-5 h-5" />
-              <span className="hidden sm:inline text-sm font-medium">Login</span>
+              <span className="hidden sm:inline text-sm font-bold">Login</span>
             </Link>
           )}
         </div>

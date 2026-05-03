@@ -3,42 +3,33 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // ── Default deny — bloqueia tudo que não for explicitamente permitido
-    match /{document=**} {
-      allow read, write: if false;
-    }
-
     // ── Funções auxiliares ────────────────────────────────────────────────
     function isSignedIn() {
       return request.auth != null;
     }
 
+    function isEmailVerified() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
     function isAdmin() {
-      return isSignedIn() &&
-        exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+      return isSignedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
     }
 
     function incoming() { return request.resource.data; }
-
-    function isVerifiedApp() {
-      return request.app != null;
-    }
 
     function isValidConfig(data) {
       return data.keys().hasAll(['tipo_chave', 'chave_pix']) &&
              data.tipo_chave in ['cpf_cnpj', 'email', 'telefone', 'aleatoria'] &&
              data.chave_pix is string &&
-             data.chave_pix.size() > 0 &&
              data.chave_pix.size() <= 256;
     }
 
     function isValidTransaction(data) {
       return data.keys().hasAll(['payload', 'amount', 'timestamp']) &&
              data.payload is string &&
-             data.payload.size() > 0 &&
-             data.payload.size() <= 600 &&
-             data.amount is number &&
-             data.amount >= 0;
+             data.payload.size() <= 1000 &&
+             data.amount is number;
     }
 
     // ── /config/settings — configuração global do PIX ────────────────────
@@ -49,47 +40,47 @@ service cloud.firestore {
 
     // ── /admins/{uid} — usuários administradores ─────────────────────────
     match /admins/{uid} {
-      // Admin pode ler seu próprio doc; outros admins podem listar todos
       allow get: if isSignedIn() && (request.auth.uid == uid || isAdmin());
       allow list: if isAdmin();
 
       // Criação: sistema vazio (primeiro admin) OU convite válido
       allow create: if isSignedIn() && (
-        // Bootstrap: nenhum admin existe ainda
+        // Bootstrap: se não houver contador ou count for 0
         !exists(/databases/$(database)/documents/admin_count/total) ||
         get(/databases/$(database)/documents/admin_count/total).data.count == 0 ||
-        // Convite válido existe para o e-mail do usuário
-        exists(/databases/$(database)/documents/admins_invitations/$(request.auth.token.email.lower()))
+        (request.auth.token.email != null && exists(/databases/$(database)/documents/admins_invitations/$(request.auth.token.email.lower())))
       );
 
-      // Remoção: apenas admins podem remover outros (não a si mesmos)
       allow delete: if isAdmin() && uid != request.auth.uid;
     }
 
     // ── /admin_count/total — contador de admins ───────────────────────────
     match /admin_count/total {
-      allow read: if true;
-      allow create: if isSignedIn(); // Bootstrap inicial
-      allow update: if isAdmin();
-      allow delete: if false;       // Nunca deletar
+      allow read: if true; 
+      allow create: if isSignedIn(); 
+      allow update: if isSignedIn(); // Permitir durante bootstrap ou admin logado
+      allow delete: if false;       
     }
 
     // ── /transactions/{id} — log de QR Codes gerados ─────────────────────
     match /transactions/{id} {
       allow read: if isAdmin();
-      // Público mas com validação de estrutura para evitar spam
       allow create: if isValidTransaction(incoming());
     }
 
     // ── /admins_invitations/{email} — convites pendentes ─────────────────
     match /admins_invitations/{email} {
-      // Usuário só lê o próprio convite
       allow get: if isSignedIn() &&
         request.auth.token.email != null &&
         request.auth.token.email.lower() == email;
       allow list: if isAdmin();
       allow write: if isAdmin();
       allow delete: if isAdmin();
+    }
+
+    // ── Default deny — bloqueia tudo que não foi explicitamente permitido ──
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }

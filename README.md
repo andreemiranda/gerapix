@@ -3,8 +3,8 @@
   <h1>GeraPix</h1>
   <p><strong>Gerador de QR Code PIX com painel administrativo</strong></p>
 
-  [![Netlify Status](https://api.netlify.com/api/v1/badges/SEU_BADGE_ID/deploy-status)](https://app.netlify.com/sites/gerapix/deploys)
-  [![CI](https://github.com/severinarocha/gerapix/actions/workflows/ci.yml/badge.svg)](https://github.com/severinarocha/gerapix/actions)
+  [![Netlify Status](https://api.netlify.com/api/v1/badges/SEU_BADGE_ID/deploy-status)](https://app.netlify.com/sites/gerapixqrcode/deploys)
+  [![CI](https://github.com/severinarocha/gerapixqrcode/actions/workflows/ci.yml/badge.svg)](https://github.com/severinarocha/gerapixqrcode/actions)
   ![License](https://img.shields.io/badge/license-MIT-blue)
   ![Node](https://img.shields.io/badge/node-%3E%3D20-green)
 </div>
@@ -15,8 +15,8 @@
 
 | Ambiente | URL | Branch |
 |----------|-----|--------|
-| **Produção** | https://gerapix.netlify.app | `main` |
-| **Desenvolvimento** | https://gerapix-dev.netlify.app | `develop` |
+| **Produção** | https://gerapixqrcode.netlify.app | `main` |
+| **Desenvolvimento** | https://gerapixqrcode-dev.netlify.app | `develop` |
 | **Preview (PRs)** | Gerado automaticamente pelo Netlify | `feature/*` |
 
 ## ✨ Funcionalidades
@@ -50,8 +50,8 @@
 
 ### 1. Clone e instale
 ```bash
-git clone https://github.com/severinarocha/gerapix.git
-cd gerapix
+git clone https://github.com/severinarocha/gerapixqrcode.git
+cd gerapixqrcode
 npm install
 ```
 
@@ -82,8 +82,8 @@ Consulte `.env.example` para a lista completa de variáveis necessárias.
 ## 📦 Deploy
 
 O deploy é automático via Netlify:
-- Push para `develop` → deploya em https://gerapix-dev.netlify.app
-- Push para `main` → deploya em https://gerapix.netlify.app
+- Push para `develop` → deploya em https://gerapixqrcode-dev.netlify.app
+- Push para `main` → deploya em https://gerapixqrcode.netlify.app
 - Pull Request → gera URL de preview único
 
 Consulte [DEPLOY.md](DEPLOY.md) para configuração detalhada.
@@ -98,4 +98,4 @@ Consulte [SECURITY.md](SECURITY.md) para reportar vulnerabilidades.
 
 ## 📄 Licença
 
-MIT © [Severina Rocha](https://github.com/severinarocha)
+MIT © [Severina Rocha](https://github.com/severinarocha/gerapixqrcode)

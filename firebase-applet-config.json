@@ -1,10 +1,10 @@
 {
-  "projectId": "gen-lang-client-0172523453",
-  "appId": "1:454552756942:web:4a12cbeb73b5c9712ce69f",
-  "apiKey": "AIzaSyCw9PxBzfy7-assHuc42a12y6bjl_I2hmo",
-  "authDomain": "gen-lang-client-0172523453.firebaseapp.com",
+  "projectId": "gerapix-a6b5d",
+  "appId": "1:686260010988:web:d11b28952bfbd5dd528ac9",
+  "apiKey": "AIzaSyAb1NPuOSv8HFdN5cMi76T6N_i_JRyyg_M",
+  "authDomain": "gerapix-a6b5d.firebaseapp.com",
   "firestoreDatabaseId": "ai-studio-10db73e7-ea4e-4b05-910b-263aa64049d3",
-  "storageBucket": "gen-lang-client-0172523453.firebasestorage.app",
-  "messagingSenderId": "454552756942",
+  "storageBucket": "gerapix-a6b5d.firebasestorage.app",
+  "messagingSenderId": "686260010988",
   "measurementId": ""
 }

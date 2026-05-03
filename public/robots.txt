@@ -3,4 +3,4 @@ Allow: /
 Disallow: /admin
 Disallow: /admin/*
 
-Sitemap: https://gerapix.netlify.app/sitemap.xml
+Sitemap: https://gerapixqrcode.netlify.app/sitemap.xml
