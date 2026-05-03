@@ -176,7 +176,7 @@ export default function Result() {
                   Pix Copia e Cola
                 </label>
                 <div className="relative group">
-                  <div className="w-full bg-slate-900 border border-slate-700 rounded-xl pl-4 pr-12 py-3.5 text-[11px] font-mono text-slate-300 truncate break-all">
+                  <div className="w-full bg-slate-900 border border-slate-700 rounded-xl pl-4 pr-12 py-3.5 text-[11px] font-mono text-slate-300 break-all leading-relaxed min-h-[48px]">
                     {payload}
                   </div>
                   <button
