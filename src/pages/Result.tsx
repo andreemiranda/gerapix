@@ -151,7 +151,7 @@ export default function Result() {
         animate={{ opacity: 1, y: 0 }}
         className="w-full max-w-[400px] relative z-10"
       >
-        <div className="card shadow-[var(--shadow-lg)] border-[var(--color-pix-purple)]/20">
+        <div className="card shadow-[var(--shadow-lg)] border-[var(--color-pix-purple)]/20 animate-fade-up">
           <div className="card-accent" />
 
           <div className="p-8 flex flex-col items-center">
@@ -268,7 +268,7 @@ export default function Result() {
         </div>
 
         {/* Security Warning */}
-        <div className="mt-8 flex flex-col items-center gap-2 px-8 text-center no-print">
+        <div className="mt-8 flex flex-col items-center gap-2 px-8 text-center no-print animate-fade-up delay-2">
           <div className="flex items-center gap-1.5 text-[10px] font-bold text-[var(--color-info)] uppercase tracking-wider">
             <AlertCircle className="w-3.5 h-3.5" />
             Dica de Segurança

@@ -9,7 +9,7 @@ export default function ManageConsent() {
     <LegalPage title="Gerenciar Consentimento" lastUpdated="04 de Maio de 2026">
       <p>
         Nesta página, você pode gerenciar suas preferências de privacidade e cookies para o GeraPix,
-        em total conformidade com a<strong> Lei Geral de Proteção de Dados (LGPD)</strong>.
+        em total conformidade com a <strong>Lei Geral de Proteção de Dados (LGPD)</strong>.
       </p>
 
       <div className="my-10 space-y-8">

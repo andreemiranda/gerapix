@@ -4,12 +4,12 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-[var(--surface-1)] border-t border-[var(--surface-border)] pt-12 pb-8 px-6 no-print relative overflow-hidden">
+    <footer className="bg-[var(--footer-bg)] border-t border-[var(--footer-border)] pt-12 pb-8 px-6 no-print relative overflow-hidden">
       {/* Background Pattern */}
       <div
         className="absolute inset-0 pointer-events-none opacity-[0.3]"
         style={{
-          backgroundImage: 'radial-gradient(var(--surface-border) 1px, transparent 1px)',
+          backgroundImage: 'radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px)',
           backgroundSize: '20px 20px',
         }}
       ></div>
@@ -21,26 +21,26 @@ export default function Footer() {
             <div className="w-10 h-10 rounded-[var(--radius-md)] bg-[var(--color-pix-purple)] flex items-center justify-center shadow-lg shadow-[var(--color-pix-purple)]/10 transition-transform group-hover:scale-105">
               <Wallet className="w-5 h-5 text-white" />
             </div>
-            <span className="text-[18px] font-extrabold text-[var(--text-primary)] tracking-tight">
+            <span className="text-[18px] font-extrabold text-white tracking-tight">
               Gera<span className="text-[var(--color-pix-purple)]">Pix</span>
             </span>
           </Link>
-          <p className="text-[13px] font-bold text-[var(--text-tertiary)] uppercase tracking-[0.1em]">
+          <p className="text-[13px] font-bold text-white/50 uppercase tracking-[0.1em]">
             Gerador de QR Code PIX gratuito e seguro
           </p>
         </div>
 
         {/* Center Zone - Links Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12 pb-8 border-b border-[var(--surface-border)]">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12 pb-8 border-b border-white/10">
           <div className="space-y-4">
-            <h4 className="text-[11px] font-extrabold text-[var(--text-primary)] uppercase tracking-widest">
+            <h4 className="text-[11px] font-extrabold text-white/90 uppercase tracking-widest">
               Legal
             </h4>
             <ul className="space-y-3">
               <li>
                 <Link
                   to="/termos-de-uso"
-                  className="text-[13px] text-[var(--text-secondary)] hover:text-[var(--color-pix-purple)] transition-colors"
+                  className="text-[13px] text-[var(--footer-text-link)] hover:text-[var(--color-pix-purple)] transition-colors"
                 >
                   Termos de Uso
                 </Link>
@@ -48,7 +48,7 @@ export default function Footer() {
               <li>
                 <Link
                   to="/politica-de-privacidade"
-                  className="text-[13px] text-[var(--text-secondary)] hover:text-[var(--color-pix-purple)] transition-colors"
+                  className="text-[13px] text-[var(--footer-text-link)] hover:text-[var(--color-pix-purple)] transition-colors"
                 >
                   Privacidade
                 </Link>
@@ -56,7 +56,7 @@ export default function Footer() {
               <li>
                 <Link
                   to="/politica-de-cookies"
-                  className="text-[13px] text-[var(--text-secondary)] hover:text-[var(--color-pix-purple)] transition-colors"
+                  className="text-[13px] text-[var(--footer-text-link)] hover:text-[var(--color-pix-purple)] transition-colors"
                 >
                   Cookies
                 </Link>
@@ -64,7 +64,7 @@ export default function Footer() {
               <li>
                 <Link
                   to="/aviso-legal"
-                  className="text-[13px] text-[var(--text-secondary)] hover:text-[var(--color-pix-purple)] transition-colors"
+                  className="text-[13px] text-[var(--footer-text-link)] hover:text-[var(--color-pix-purple)] transition-colors"
                 >
                   Aviso Legal
                 </Link>
@@ -73,19 +73,19 @@ export default function Footer() {
           </div>
 
           <div className="space-y-4">
-            <h4 className="text-[11px] font-extrabold text-[var(--text-primary)] uppercase tracking-widest">
+            <h4 className="text-[11px] font-extrabold text-white/90 uppercase tracking-widest">
               Conformidade
             </h4>
             <ul className="space-y-3">
               <li>
-                <span className="text-[13px] text-[var(--text-tertiary)] italic">
+                <span className="text-[13px] text-white/40 italic">
                   Lei 13.709/2018 (LGPD)
                 </span>
               </li>
               <li>
                 <Link
                   to="/gerenciar-consentimento"
-                  className="text-[13px] text-[var(--text-secondary)] hover:text-[var(--color-pix-purple)] transition-colors text-left"
+                  className="text-[13px] text-[var(--footer-text-link)] hover:text-[var(--color-pix-purple)] transition-colors text-left"
                 >
                   Gerenciar Consentimento
                 </Link>
@@ -95,7 +95,7 @@ export default function Footer() {
                   href="https://github.com/andreemiranda/gerapix"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[13px] text-[var(--text-secondary)] hover:text-[var(--color-pix-purple)] transition-colors flex items-center gap-1.5"
+                  className="text-[13px] text-[var(--footer-text-link)] hover:text-[var(--color-pix-purple)] transition-colors flex items-center gap-1.5"
                 >
                   Contato DPO <ExternalLink className="w-3 h-3" />
                 </a>
@@ -104,7 +104,7 @@ export default function Footer() {
           </div>
 
           <div className="space-y-4">
-            <h4 className="text-[11px] font-extrabold text-[var(--text-primary)] uppercase tracking-widest">
+            <h4 className="text-[11px] font-extrabold text-white/90 uppercase tracking-widest">
               Projeto
             </h4>
             <ul className="space-y-3">
@@ -113,7 +113,7 @@ export default function Footer() {
                   href="https://github.com/andreemiranda"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[13px] text-[var(--text-secondary)] hover:text-[var(--color-pix-purple)] transition-colors flex items-center gap-1.5"
+                  className="text-[13px] text-[var(--footer-text-link)] hover:text-[var(--color-pix-purple)] transition-colors flex items-center gap-1.5"
                 >
                   Código-fonte <Github className="w-4 h-4" />
                 </a>
@@ -121,7 +121,7 @@ export default function Footer() {
               <li>
                 <a
                   href="mailto:acrmrochamiranda@gmail.com"
-                  className="text-[13px] text-[var(--text-secondary)] hover:text-[var(--color-pix-purple)] transition-colors"
+                  className="text-[13px] text-[var(--footer-text-link)] hover:text-[var(--color-pix-purple)] transition-colors"
                 >
                   Reportar Problema
                 </a>
@@ -132,7 +132,7 @@ export default function Footer() {
 
         {/* Bottom Zone - Copyright */}
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
-          <p className="text-[12px] text-[var(--text-tertiary)] font-medium">
+          <p className="text-[12px] text-white/40 font-medium">
             © {currentYear} GeraPix · Criado por{' '}
             <a
               href="https://github.com/andreemiranda"

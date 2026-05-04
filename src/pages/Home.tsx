@@ -142,7 +142,7 @@ export default function Home() {
         className="w-full max-w-[400px] relative z-10"
       >
         {/* Establishment Badge */}
-        <div className="mb-8 flex justify-center">
+        <div className="mb-8 flex justify-center animate-fade-up">
           <div className="flex items-center gap-3 px-5 py-2.5 bg-white border border-[var(--surface-border)] rounded-full shadow-sm">
             <div className="relative">
               <span className="absolute inset-0 rounded-full bg-[var(--color-pix-green)] animate-ping opacity-20"></span>
@@ -155,7 +155,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="card">
+        <div className="card animate-fade-up delay-1">
           <div className="card-accent" />
           <div className="p-8">
             <div className="flex items-center gap-4 mb-10">
@@ -201,7 +201,7 @@ export default function Home() {
         </div>
 
         {/* Trust Badges */}
-        <div className="mt-12 grid grid-cols-3 gap-4">
+        <div className="mt-12 grid grid-cols-3 gap-4 animate-fade-up delay-2">
           <div className="flex flex-col items-center text-center gap-2">
             <div className="w-11 h-11 rounded-xl bg-white border border-[var(--surface-border)] shadow-sm flex items-center justify-center">
               <ShieldCheck className="w-5 h-5 text-[var(--color-pix-green)]" />

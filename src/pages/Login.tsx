@@ -160,8 +160,8 @@ export default function Login() {
         <div className="card">
           <div className="card-accent" />
           <div className="p-10">
-            <div className="text-center mb-10">
-              <div className="w-16 h-16 bg-[var(--color-pix-purple)]/5 text-[var(--color-pix-purple)] rounded-full flex items-center justify-center mx-auto mb-6 border border-[var(--surface-border)]">
+            <div className="text-center mb-10 animate-fade-up">
+              <div className="w-16 h-16 bg-[var(--color-pix-purple)]/5 text-[var(--color-pix-purple)] rounded-full flex items-center justify-center mx-auto mb-6 border border-[var(--surface-border)] logo-icon">
                 <ShieldCheck className="w-8 h-8" />
               </div>
               <h1 className="text-2xl font-extrabold text-[var(--text-primary)] mb-2">
@@ -189,7 +189,7 @@ export default function Login() {
             </AnimatePresence>
 
             {!showPasswordForm ? (
-              <div className="space-y-4">
+              <div className="space-y-4 animate-fade-up delay-1">
                 <button
                   onClick={handleGoogleLogin}
                   disabled={loading}
@@ -309,7 +309,7 @@ export default function Login() {
           </div>
         </div>
 
-        <p className="mt-8 text-center text-[11px] text-[var(--text-tertiary)] font-medium leading-relaxed tracking-wide px-8">
+        <p className="mt-8 text-center text-[11px] text-[var(--text-tertiary)] font-medium leading-relaxed tracking-wide px-8 animate-fade-up delay-2">
           {isInitializing
             ? 'Primeiro acesso? Registre o e-mail que será o proprietário da conta.'
             : 'Esta área é exclusiva para administradores autorizados.'}

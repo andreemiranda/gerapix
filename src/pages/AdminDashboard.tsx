@@ -180,7 +180,7 @@ export default function AdminDashboard() {
   return (
     <div className="flex-1 w-full max-w-6xl mx-auto px-4 py-12 flex flex-col gap-8">
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 px-2 lg:px-0">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 px-2 lg:px-0 animate-fade-up">
         <div>
           <div className="flex items-center gap-2 mb-2">
             <h1 className="text-2xl font-extrabold text-[var(--text-primary)]">
@@ -199,7 +199,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Tabs Navigation */}
-      <div className="flex gap-1 p-1 bg-[var(--surface-2)] rounded-[var(--radius-md)] w-fit mx-2 lg:mx-0">
+      <div className="flex gap-1 p-1 bg-[var(--surface-2)] rounded-[var(--radius-md)] w-fit mx-2 lg:mx-0 animate-fade-up delay-1">
         <button
           onClick={() => setActiveTab('config')}
           className={cn(
