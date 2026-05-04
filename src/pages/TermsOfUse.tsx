@@ -28,7 +28,7 @@ export default function TermsOfUse() {
 
       <h2>4. Limitação de Responsabilidade</h2>
       <p>
-        O GeraPix é fornecido "como está" e "conforme disponível". O desenvolvedor não garante que a ferramenta estará sempre livre de erros ou interrupções.
+        O GeraPix é fornecido &quot;como está&quot; e &quot;conforme disponível&quot;. O desenvolvedor não garante que a ferramenta estará sempre livre de erros ou interrupções.
       </p>
       <p>
         O desenvolvedor não se responsabiliza por:
@@ -44,7 +44,7 @@ export default function TermsOfUse() {
         O GeraPix é um projeto de código aberto (open-source). O código-fonte está disponível no repositório GitHub de André Miranda sob a licença MIT (ou conforme indicado no repositório).
       </p>
       <p>
-        As marcas "PIX" e o logotipo do PIX são de titularidade do Banco Central do Brasil.
+        As marcas &quot;PIX&quot; e o logotipo do PIX são de titularidade do Banco Central do Brasil.
       </p>
 
       <h2>6. Dados e Privacidade</h2>

@@ -16,8 +16,8 @@ export default function CookiePolicy() {
 
       <h2>2. Por que usamos cookies?</h2>
       <p>
-        Usamos cookies de "primeira parte" por razões técnicas, para que nosso site funcione corretamente. 
-        Estes são chamados de cookies "estritamente necessários".
+        Usamos cookies de &quot;primeira parte&quot; por razões técnicas, para que nosso site funcione corretamente. 
+        Estes são chamados de cookies &quot;estritamente necessários&quot;.
       </p>
 
       <h2>3. Cookies utilizados no GeraPix</h2>
@@ -61,7 +61,7 @@ export default function CookiePolicy() {
         Você tem o direito de decidir se aceita ou rejeita cookies.
       </p>
       <ul>
-        <li><strong>Pelo Site:</strong> Você pode revogar seu consentimento a qualquer momento clicando no link "Gerenciar Consentimento" localizado no rodapé do nosso site.</li>
+        <li><strong>Pelo Site:</strong> Você pode revogar seu consentimento a qualquer momento clicando no link &quot;Gerenciar Consentimento&quot; localizado no rodapé do nosso site.</li>
         <li><strong>Pelo Navegador:</strong> Você pode configurar seu navegador para recusar todos os cookies ou para indicar quando um cookie está sendo enviado.</li>
       </ul>
 
