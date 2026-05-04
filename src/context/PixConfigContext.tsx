@@ -17,26 +17,26 @@ export function PixConfigProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsub = onSnapshot(doc(db, 'config', 'settings'), (snap) => {
-      if (snap.exists()) {
-        setConfig(snap.data() as PixConfig);
+    const unsub = onSnapshot(
+      doc(db, 'config', 'settings'),
+      (snap) => {
+        if (snap.exists()) {
+          setConfig(snap.data() as PixConfig);
+        }
+        setLoading(false);
+      },
+      (err) => {
+        handleFirestoreError(err, OperationType.GET, 'config/settings');
+        setLoading(false);
       }
-      setLoading(false);
-    }, (err) => {
-      handleFirestoreError(err, OperationType.GET, 'config/settings');
-      setLoading(false);
-    });
+    );
 
     return () => unsub();
   }, []);
 
   const value = React.useMemo(() => ({ config, loading }), [config, loading]);
 
-  return (
-    <PixConfigContext.Provider value={value}>
-      {children}
-    </PixConfigContext.Provider>
-  );
+  return <PixConfigContext.Provider value={value}>{children}</PixConfigContext.Provider>;
 }
 
 export function usePixConfig() {

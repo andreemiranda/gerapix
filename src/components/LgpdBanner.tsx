@@ -21,26 +21,37 @@ export default function LgpdBanner() {
                 <ShieldCheck className="w-6 h-6 text-[var(--color-pix-purple)]" />
               </div>
               <div className="space-y-1">
-                <h3 className="text-[14px] font-[800] text-[var(--text-primary)]">Usamos cookies para melhorar sua experiência</h3>
+                <h3 className="text-[14px] font-[800] text-[var(--text-primary)]">
+                  Usamos cookies para melhorar sua experiência
+                </h3>
                 <p className="text-[13px] text-[var(--text-secondary)] leading-relaxed">
-                  Este site utiliza cookies estritamente necessários para funcionamento e, com seu consentimento, cookies analíticos. 
-                  Em conformidade com a Lei Geral de Proteção de Dados (LGPD — Lei 13.709/2018), você pode aceitar todos os cookies ou apenas os essenciais. 
-                  Consulte nossa <Link to="/politica-de-cookies" className="text-[var(--color-pix-purple)] font-bold hover:underline">Política de Cookies</Link> e <Link to="/politica-de-privacidade" className="text-[var(--color-pix-purple)] font-bold hover:underline">Política de Privacidade</Link>.
+                  Este site utiliza cookies estritamente necessários para funcionamento e, com seu
+                  consentimento, cookies analíticos. Em conformidade com a Lei Geral de Proteção de
+                  Dados (LGPD — Lei 13.709/2018), você pode aceitar todos os cookies ou apenas os
+                  essenciais. Consulte nossa{' '}
+                  <Link
+                    to="/politica-de-cookies"
+                    className="text-[var(--color-pix-purple)] font-bold hover:underline"
+                  >
+                    Política de Cookies
+                  </Link>{' '}
+                  e{' '}
+                  <Link
+                    to="/politica-de-privacidade"
+                    className="text-[var(--color-pix-purple)] font-bold hover:underline"
+                  >
+                    Política de Privacidade
+                  </Link>
+                  .
                 </p>
               </div>
             </div>
-            
+
             <div className="flex items-center gap-3 w-full lg:w-auto shrink-0">
-              <button 
-                onClick={rejectAll}
-                className="btn-secondary btn-sm flex-1 lg:flex-none"
-              >
+              <button onClick={rejectAll} className="btn-secondary btn-sm flex-1 lg:flex-none">
                 Somente essenciais
               </button>
-              <button 
-                onClick={acceptAll}
-                className="btn-primary btn-sm flex-1 lg:flex-none"
-              >
+              <button onClick={acceptAll} className="btn-primary btn-sm flex-1 lg:flex-none">
                 Aceitar todos
               </button>
             </div>

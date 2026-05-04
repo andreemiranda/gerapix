@@ -51,7 +51,10 @@ export function generatePixPayload({
   payload += formatId('60', cleanCity.substring(0, 15));
 
   // 62 - Additional Data Field
-  const cleanTxId = transactionId.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+  const cleanTxId = transactionId
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, '');
   const additionalData = formatId('05', cleanTxId.substring(0, 25) || '***');
   payload += formatId('62', additionalData);
 

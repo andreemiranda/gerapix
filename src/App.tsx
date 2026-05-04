@@ -33,7 +33,7 @@ export default function App() {
 
     const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
       setUser(user);
-      
+
       if (unsubscribeAdmin) {
         unsubscribeAdmin();
         unsubscribeAdmin = null;
@@ -41,14 +41,18 @@ export default function App() {
 
       if (user) {
         // Real-time listener for the user's admin document
-        unsubscribeAdmin = onSnapshot(doc(db, 'admins', user.uid), (docSnap) => {
-          setIsAdmin(docSnap.exists());
-          setLoading(false);
-        }, (error) => {
-          console.error("Error observing admin status:", error);
-          setIsAdmin(false);
-          setLoading(false);
-        });
+        unsubscribeAdmin = onSnapshot(
+          doc(db, 'admins', user.uid),
+          (docSnap) => {
+            setIsAdmin(docSnap.exists());
+            setLoading(false);
+          },
+          (error) => {
+            console.error('Error observing admin status:', error);
+            setIsAdmin(false);
+            setLoading(false);
+          }
+        );
       } else {
         setIsAdmin(false);
         setLoading(false);
@@ -79,15 +83,43 @@ export default function App() {
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/resultado" element={<Result />} />
-                <Route path="/login" element={user && isAdmin ? <Navigate to="/admin" /> : <Login />} />
+                <Route
+                  path="/login"
+                  element={user && isAdmin ? <Navigate to="/admin" /> : <Login />}
+                />
                 <Route path="/termos-de-uso" element={<TermsOfUse />} />
                 <Route path="/politica-de-privacidade" element={<PrivacyPolicy />} />
                 <Route path="/politica-de-cookies" element={<CookiePolicy />} />
                 <Route path="/aviso-legal" element={<LegalNotice />} />
                 <Route path="/gerenciar-consentimento" element={<ManageConsent />} />
-                <Route 
-                  path="/admin" 
-                  element={user ? (isAdmin ? <AdminDashboard /> : <div className="flex-1 flex items-center justify-center p-8"><div className="card max-w-sm w-full p-8 text-center"><div className="w-16 h-16 bg-[var(--color-error)]/10 text-[var(--color-error)] rounded-full flex items-center justify-center mx-auto mb-6"><AlertCircle className="w-8 h-8" /></div><h1 className="text-xl font-extrabold text-[var(--text-primary)] mb-2">Acesso Negado</h1><p className="text-[var(--text-secondary)] text-[14px] mb-8">Esta conta não possui privilégios de administrador.</p><button onClick={() => auth.signOut()} className="btn-primary w-full">Sair e Tentar Novamente</button></div></div>) : <Navigate to="/login" />} 
+                <Route
+                  path="/admin"
+                  element={
+                    user ? (
+                      isAdmin ? (
+                        <AdminDashboard />
+                      ) : (
+                        <div className="flex-1 flex items-center justify-center p-8">
+                          <div className="card max-w-sm w-full p-8 text-center">
+                            <div className="w-16 h-16 bg-[var(--color-error)]/10 text-[var(--color-error)] rounded-full flex items-center justify-center mx-auto mb-6">
+                              <AlertCircle className="w-8 h-8" />
+                            </div>
+                            <h1 className="text-xl font-extrabold text-[var(--text-primary)] mb-2">
+                              Acesso Negado
+                            </h1>
+                            <p className="text-[var(--text-secondary)] text-[14px] mb-8">
+                              Esta conta não possui privilégios de administrador.
+                            </p>
+                            <button onClick={() => auth.signOut()} className="btn-primary w-full">
+                              Sair e Tentar Novamente
+                            </button>
+                          </div>
+                        </div>
+                      )
+                    ) : (
+                      <Navigate to="/login" />
+                    )
+                  }
                 />
                 <Route path="*" element={<Navigate to="/" />} />
               </Routes>

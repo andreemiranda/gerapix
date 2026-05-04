@@ -11,7 +11,7 @@ interface LegalPageProps {
 
 export default function LegalPage({ title, lastUpdated, children }: LegalPageProps) {
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       className="flex-1 w-full bg-[var(--surface-1)] py-12 px-4"
@@ -19,7 +19,9 @@ export default function LegalPage({ title, lastUpdated, children }: LegalPagePro
       <div className="max-w-[800px] mx-auto">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 mb-8 text-[12px] font-bold text-[var(--text-tertiary)] uppercase tracking-wider">
-          <Link to="/" className="hover:text-[var(--color-pix-purple)] transition-colors">Início</Link>
+          <Link to="/" className="hover:text-[var(--color-pix-purple)] transition-colors">
+            Início
+          </Link>
           <span>/</span>
           <span className="text-[var(--text-secondary)]">{title}</span>
         </div>
@@ -39,7 +41,8 @@ export default function LegalPage({ title, lastUpdated, children }: LegalPagePro
               </div>
             </header>
 
-            <div className="prose prose-slate max-w-none 
+            <div
+              className="prose prose-slate max-w-none 
               prose-headings:text-[var(--text-primary)] prose-headings:font-extrabold
               prose-h2:border-l-[3px] prose-h2:border-[var(--color-pix-purple)] prose-h2:pl-4 prose-h2:text-[22px] prose-h2:mt-12 prose-h2:mb-6
               prose-h3:text-[18px] prose-h3:mt-8 prose-h3:mb-4
@@ -51,7 +54,8 @@ export default function LegalPage({ title, lastUpdated, children }: LegalPagePro
               prose-table:w-full prose-table:border-collapse prose-table:my-8
               prose-th:bg-[var(--surface-2)] prose-th:p-4 prose-th:text-left prose-th:text-[12px] prose-th:font-extrabold prose-th:text-[var(--text-primary)] prose-th:uppercase prose-th:tracking-wider prose-th:border prose-th:border-[var(--surface-border)]
               prose-td:p-4 prose-td:text-[14px] prose-td:text-[var(--text-secondary)] prose-td:border prose-td:border-[var(--surface-border)]
-            ">
+            "
+            >
               {children}
             </div>
 
@@ -61,7 +65,15 @@ export default function LegalPage({ title, lastUpdated, children }: LegalPagePro
                 Voltar ao Início
               </Link>
               <p className="text-[11px] text-[var(--text-tertiary)] font-medium">
-                GeraPix é um projeto de <a href="https://github.com/andreemiranda" target="_blank" rel="noopener noreferrer" className="text-[var(--color-pix-purple)] font-bold hover:underline">André Miranda</a>
+                GeraPix é um projeto de{' '}
+                <a
+                  href="https://github.com/andreemiranda"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[var(--color-pix-purple)] font-bold hover:underline"
+                >
+                  André Miranda
+                </a>
               </p>
             </footer>
           </div>

@@ -28,8 +28,14 @@ export default function Navbar({ user, isAdmin }: NavbarProps) {
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/92 backdrop-blur-xl border-b border-[var(--surface-border)] h-16 flex items-center no-print overflow-hidden">
       {/* Background Pattern */}
-      <div className="absolute inset-0 pointer-events-none opacity-[0.3]" style={{ backgroundImage: 'radial-gradient(var(--surface-border) 1px, transparent 1px)', backgroundSize: '20px 20px' }}></div>
-      
+      <div
+        className="absolute inset-0 pointer-events-none opacity-[0.3]"
+        style={{
+          backgroundImage: 'radial-gradient(var(--surface-border) 1px, transparent 1px)',
+          backgroundSize: '20px 20px',
+        }}
+      ></div>
+
       <div className="container mx-auto max-w-6xl px-6 flex items-center justify-between relative z-10">
         <Link to="/" className="flex items-center gap-3 group">
           <div className="w-10 h-10 rounded-[var(--radius-md)] bg-[var(--color-pix-purple)] flex items-center justify-center shadow-lg shadow-[var(--color-pix-purple)]/20 transition-transform group-hover:scale-105 active:scale-95">
@@ -44,10 +50,10 @@ export default function Navbar({ user, isAdmin }: NavbarProps) {
           <Link
             to="/"
             className={cn(
-              "px-4 py-2 rounded-[var(--radius-sm)] transition-all flex items-center gap-2 text-[14px]",
-              isActive('/') 
-                ? "bg-[var(--color-pix-purple)]/5 text-[var(--color-pix-purple)] font-bold" 
-                : "text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] hover:bg-[var(--surface-2)]"
+              'px-4 py-2 rounded-[var(--radius-sm)] transition-all flex items-center gap-2 text-[14px]',
+              isActive('/')
+                ? 'bg-[var(--color-pix-purple)]/5 text-[var(--color-pix-purple)] font-bold'
+                : 'text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] hover:bg-[var(--surface-2)]'
             )}
           >
             <Home className="w-4 h-4" />
@@ -58,10 +64,10 @@ export default function Navbar({ user, isAdmin }: NavbarProps) {
             <Link
               to="/admin"
               className={cn(
-                "px-4 py-2 rounded-[var(--radius-sm)] transition-all flex items-center gap-2 text-[14px]",
-                isActive('/admin') 
-                  ? "bg-[var(--color-pix-purple)]/5 text-[var(--color-pix-purple)] font-bold" 
-                  : "text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] hover:bg-[var(--surface-2)]"
+                'px-4 py-2 rounded-[var(--radius-sm)] transition-all flex items-center gap-2 text-[14px]',
+                isActive('/admin')
+                  ? 'bg-[var(--color-pix-purple)]/5 text-[var(--color-pix-purple)] font-bold'
+                  : 'text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] hover:bg-[var(--surface-2)]'
               )}
             >
               <Grid className="w-4 h-4" />
@@ -83,10 +89,10 @@ export default function Navbar({ user, isAdmin }: NavbarProps) {
             <Link
               to="/login"
               className={cn(
-                "px-4 py-2 rounded-[var(--radius-sm)] transition-all flex items-center gap-2 text-[14px]",
-                isActive('/login') 
-                  ? "bg-[var(--color-pix-purple)]/5 text-[var(--color-pix-purple)] font-bold" 
-                  : "text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] hover:bg-[var(--surface-2)]"
+                'px-4 py-2 rounded-[var(--radius-sm)] transition-all flex items-center gap-2 text-[14px]',
+                isActive('/login')
+                  ? 'bg-[var(--color-pix-purple)]/5 text-[var(--color-pix-purple)] font-bold'
+                  : 'text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] hover:bg-[var(--surface-2)]'
               )}
             >
               <UserIcon className="w-4 h-4" />
