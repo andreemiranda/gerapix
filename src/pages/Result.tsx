@@ -43,7 +43,6 @@ export default function Result() {
         
         setPayload(pixPayload);
 
-        // Log transaction (Improvement #3)
         addDoc(collection(db, 'transactions'), {
           payload: pixPayload,
           amount: amount,
@@ -93,7 +92,6 @@ export default function Result() {
       }
     } catch (err) {
       handleCopy();
-      // Optional: alert user it was copied because share failed
     }
   };
 
@@ -109,82 +107,101 @@ export default function Result() {
   };
 
   if (!location.state) return <Navigate to="/" replace />;
-  if (configLoading || generating) return <div className="h-full flex items-center justify-center"><div className="w-10 h-10 border-4 border-pix-purple border-t-transparent rounded-full animate-spin"></div></div>;
-  if (error || !config) return <div className="h-full flex flex-col items-center justify-center p-6 text-center space-y-4 text-red-500 font-bold"><AlertCircle className="w-12 h-12" /><p>{error || 'Configuração ausente'}</p><button onClick={() => navigate('/')} className="text-slate-600 underline">Voltar</button></div>;
+  if (configLoading || generating) {
+    return (
+      <div className="h-full flex items-center justify-center">
+        <div className="w-10 h-10 border-4 border-[var(--color-pix-purple)] border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
+  if (error || !config) {
+    return (
+      <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-[var(--surface-1)]">
+        <div className="w-16 h-16 bg-[var(--color-error)]/10 text-[var(--color-error)] rounded-full flex items-center justify-center mb-6">
+          <AlertCircle className="w-8 h-8" />
+        </div>
+        <h2 className="text-xl font-extrabold text-[var(--text-primary)] mb-2">Ops! Algo deu errado</h2>
+        <p className="text-[var(--text-secondary)] mb-8 text-[14px]">{error || 'Configuração ausente'}</p>
+        <button onClick={() => navigate('/')} className="btn-secondary">
+          <ChevronLeft className="w-5 h-5" />
+          Voltar para Início
+        </button>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-full w-full flex flex-col items-center py-8 px-4 overflow-y-auto custom-scrollbar">
-      <motion.div 
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-sm"
-      >
-        <div className="pix-card overflow-hidden shadow-2xl mb-8">
-          <div className="pix-gradient p-6 text-white text-center relative overflow-hidden">
-            {/* Elemento decorativo de fundo */}
-            <div className="absolute inset-0 opacity-10"
-              style={{ backgroundImage: 'radial-gradient(circle at 80% 20%, #fff 0%, transparent 50%)' }}
-            />
-            <p className="text-[10px] font-bold uppercase tracking-widest opacity-70 mb-1">Pagamento PIX</p>
-            <h2 className="text-lg font-black tracking-tight truncate px-2 uppercase relative z-10">
-              {config.merchant_name}
-            </h2>
-          </div>
+    <div className="flex-1 w-full flex flex-col items-center p-4 py-12 bg-[var(--surface-1)] relative overflow-hidden">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 pointer-events-none opacity-[0.4]" style={{ backgroundImage: 'radial-gradient(var(--surface-border) 1px, transparent 1px)', backgroundSize: '24px 24px' }}></div>
 
-          <div className="p-6 flex flex-col items-center">
-            <div ref={qrRef} className="mb-6 p-1 rounded-[2rem] w-full max-w-[280px]"
-              style={{ background: 'linear-gradient(135deg, rgba(112,0,255,0.15), rgba(50,188,173,0.15))' }}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="w-full max-w-[400px] relative z-10"
+      >
+        <div className="card shadow-[var(--shadow-lg)] border-[var(--color-pix-purple)]/20">
+          <div className="card-accent" />
+          
+          <div className="p-8 flex flex-col items-center">
+            {/* Value Highlight */}
+            <div className="text-center mb-8">
+              <p className="text-[11px] font-extrabold text-[var(--text-tertiary)] uppercase tracking-[0.15em] mb-2">Total a Pagar</p>
+              {amount > 0 ? (
+                <h2 className="text-[28px] font-[800] text-[var(--text-primary)] tracking-tight">
+                  <span className="text-[18px] mr-1">R$</span>
+                  {formatCurrency(amount).replace('R$', '').trim()}
+                </h2>
+              ) : (
+                <div className="px-4 py-2 bg-[var(--color-warning)]/10 border border-[var(--color-warning)]/20 rounded-xl">
+                  <p className="text-[13px] font-bold text-[var(--color-warning)]">VALOR EM ABERTO</p>
+                </div>
+              )}
+            </div>
+
+            {/* QR Code Frame */}
+            <div 
+              ref={qrRef} 
+              className="mb-8 p-1.5 rounded-[2rem] w-full max-w-[300px] border border-[var(--surface-border)] bg-gradient-to-br from-white to-[var(--surface-1)] shadow-inner"
             >
-              <div className="bg-white rounded-[1.75rem] p-4 flex flex-col items-center">
-                {/* Store Name above QR */}
-                <div className="mb-3 text-center">
-                  <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Confirmar Recebedor</p>
-                  <p className="text-xs font-bold text-slate-800 truncate px-2">{config.merchant_name}</p>
+              <div className="bg-white rounded-[1.75rem] p-5 flex flex-col items-center">
+                <div className="mb-4 flex flex-col items-center gap-1">
+                  <div className="flex items-center gap-1.5 text-[10px] font-extrabold text-[var(--text-tertiary)] uppercase tracking-wider">
+                    <ShieldCheck className="w-3.5 h-3.5 text-[var(--color-pix-green)]" />
+                    Recebedor Verificado
+                  </div>
+                  <p className="text-[14px] font-bold text-[var(--text-primary)] truncate max-w-[220px]">{config.merchant_name}</p>
                 </div>
 
-                <div className="relative group overflow-hidden rounded-xl bg-white p-1">
+                <div className="relative group overflow-hidden rounded-2xl bg-white p-2 border border-[var(--surface-border)] shadow-sm">
                   <img 
                     src={qrCodeUrl} 
                     alt="QR Code PIX" 
-                    className="w-48 h-48 sm:w-56 sm:h-56 transition-transform group-hover:scale-105"
+                    className="w-52 h-52 sm:w-56 sm:h-56 transition-transform group-hover:scale-105"
                   />
-                  <div className="absolute inset-0 bg-pix-purple/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
                 </div>
-                
-                <div className="mt-4 flex flex-col items-center gap-1 w-full border-t border-slate-100 pt-3">
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Valor do Pagamento</p>
-                  {amount > 0 ? (
-                    <p className="text-2xl font-black text-slate-800">
-                      {formatCurrency(amount)}
-                    </p>
-                  ) : (
-                    <div className="mt-1 px-3 py-2 bg-amber-50 border border-amber-200 rounded-xl text-center">
-                      <p className="text-[11px] font-bold text-amber-700 leading-relaxed">
-                        📱 Escaneie o QR Code ou<br />
-                        copie o código e <strong>digite o valor</strong><br />
-                        no seu aplicativo bancário
-                      </p>
-                    </div>
-                  )}
-                </div>
+
+                <p className="mt-4 text-[11px] text-[var(--text-tertiary)] font-medium text-center leading-relaxed">
+                  Escaneie este código no seu <br />aplicativo bancário para pagar.
+                </p>
               </div>
             </div>
 
-            <div className="w-full space-y-4">
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-black text-slate-500 ml-1 uppercase tracking-wider">
-                  Pix Copia e Cola
-                </label>
+            {/* Copy Paste Section */}
+            <div className="w-full space-y-6">
+              <div className="space-y-2">
+                <label className="label-sm ml-1">Pix Copia e Cola</label>
                 <div className="relative group">
-                  <div className="w-full bg-slate-900 border border-slate-700 rounded-xl pl-4 pr-12 py-3.5 text-[11px] font-mono text-slate-300 break-all leading-relaxed min-h-[48px]">
+                  <div className="field font-mono text-[11px] break-all leading-relaxed pr-12 min-h-[48px] bg-[var(--surface-1)]">
                     {payload}
                   </div>
                   <button
                     onClick={handleCopy}
                     className={cn(
-                      "absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-lg transition-all",
-                      copied ? "bg-pix-green text-white shadow-lg shadow-pix-green/20" : 
-                      "bg-slate-700 text-slate-300 hover:bg-pix-purple hover:text-white"
+                      "absolute right-2 top-1.5 p-2 rounded-lg transition-all",
+                      copied ? "bg-[var(--color-pix-green)] text-white shadow-lg" : 
+                      "text-[var(--text-tertiary)] hover:bg-[var(--surface-2)] hover:text-[var(--color-pix-purple)]"
                     )}
                   >
                     {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
@@ -192,48 +209,74 @@ export default function Result() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-2 no-print">
-                <button 
-                  onClick={downloadQRCode}
-                  className="flex flex-col items-center justify-center gap-1.5 py-3 bg-slate-100 text-slate-700 border border-slate-200 hover:bg-pix-purple hover:text-white hover:border-transparent rounded-2xl transition-all active:scale-95"
-                >
+              <div className="space-y-3">
+                <button onClick={handleCopy} className="btn-primary w-full group">
+                  {copied ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5 group-hover:scale-110 transition-transform" />}
+                  {copied ? 'Código Copiado!' : 'Copiar Código PIX'}
+                </button>
+
+                <div className="grid grid-cols-2 gap-3 no-print">
+                  <button onClick={handleShare} className="btn-secondary btn-sm">
+                    <Share2 className="w-4 h-4" />
+                    Compartilhar
+                  </button>
+                  <button onClick={handlePrint} className="btn-secondary btn-sm">
+                    <Printer className="w-4 h-4" />
+                    Imprimir
+                  </button>
+                </div>
+                
+                <button onClick={downloadQRCode} className="btn-secondary btn-sm w-full no-print">
                   <Download className="w-4 h-4" />
-                  <span className="text-[9px] font-black">BAIXAR</span>
-                </button>
-                <button 
-                  onClick={handlePrint}
-                  className="flex flex-col items-center justify-center gap-1.5 py-3 bg-slate-100 text-slate-700 border border-slate-200 hover:bg-pix-purple hover:text-white hover:border-transparent rounded-2xl transition-all active:scale-95"
-                >
-                  <Printer className="w-4 h-4" />
-                  <span className="text-[9px] font-black">IMPRIMIR</span>
-                </button>
-                <button 
-                  onClick={handleShare}
-                  className="flex flex-col items-center justify-center gap-1.5 py-3 bg-slate-100 text-slate-700 border border-slate-200 hover:bg-pix-purple hover:text-white hover:border-transparent rounded-2xl transition-all active:scale-95"
-                >
-                  <Share2 className="w-4 h-4" />
-                  <span className="text-[9px] font-black">ENVIAR</span>
+                  Baixar QR Code
                 </button>
               </div>
             </div>
           </div>
 
-          <div className="bg-slate-50 p-4 border-t border-slate-100 no-print">
+          <div className="bg-[var(--surface-1)] p-6 border-t border-[var(--surface-border)] no-print">
             <button
               onClick={() => navigate('/')}
-              className="flex items-center justify-center gap-2 w-full py-3 bg-slate-100 text-slate-700 border border-slate-200 hover:bg-pix-purple hover:text-white hover:border-transparent rounded-2xl transition-all active:scale-95 font-bold text-xs"
+              className="btn-ghost w-full font-bold text-[13px]"
             >
               <ChevronLeft className="w-4 h-4" />
-              <span>Gerar Nova Cobrança</span>
+              Gerar Nova Cobrança
             </button>
           </div>
         </div>
 
-        {/* Info Message */}
-        <p className="mb-10 text-center text-[10px] text-slate-400 font-medium px-8 leading-relaxed no-print">
-          Confirme os dados do recebedor no seu aplicativo bancário antes de finalizar o pagamento.
-        </p>
+        {/* Security Warning */}
+        <div className="mt-8 flex flex-col items-center gap-2 px-8 text-center no-print">
+          <div className="flex items-center gap-1.5 text-[10px] font-bold text-[var(--color-info)] uppercase tracking-wider">
+            <AlertCircle className="w-3.5 h-3.5" />
+            Dica de Segurança
+          </div>
+          <p className="text-[11px] text-[var(--text-tertiary)] leading-relaxed">
+            Confirme sempre o nome do estabelecimento no seu banco antes de confirmar o pagamento.
+          </p>
+        </div>
       </motion.div>
     </div>
+  );
+}
+
+// Inline component dependencies
+function ShieldCheck(props: any) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
+      <path d="m9 12 2 2 4-4" />
+    </svg>
   );
 }

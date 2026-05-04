@@ -5,8 +5,8 @@ import { PixConfig, PixKeyType, OperationType } from '../types';
 import { doc, setDoc, collection, getDocs, serverTimestamp, query, orderBy, where, Timestamp } from 'firebase/firestore';
 import { usePixConfig } from '../context/PixConfigContext';
 import { useAdminUsers } from '../hooks/useAdminUsers';
-import { motion } from 'motion/react';
-import { Settings, Users, Save, Trash2, CheckCircle, Mail, UserCheck, AlertCircle, Clock, Search } from 'lucide-react';
+import { motion, AnimatePresence } from 'motion/react';
+import { Settings, Users, Save, Trash2, CheckCircle, Mail, UserCheck, AlertCircle, Clock, Search, History } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -14,10 +14,13 @@ function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
+type TabType = 'config' | 'transactions' | 'team';
+
 export default function AdminDashboard() {
   const { config: remoteConfig } = usePixConfig();
   const { admins, count: countAdmins, removeAdmin: apiRemoveAdmin } = useAdminUsers();
   
+  const [activeTab, setActiveTab] = useState<TabType>('config');
   const [config, setConfig] = useState<PixConfig>({
     tipo_chave: 'aleatoria',
     chave_pix: '',
@@ -33,7 +36,6 @@ export default function AdminDashboard() {
   
   // New Admin form
   const [newAdminEmail, setNewAdminEmail] = useState('');
-  const [newAdminPass, setNewAdminPass] = useState('');
   const [newAdminName, setNewAdminName] = useState('');
 
   useEffect(() => {
@@ -73,7 +75,6 @@ export default function AdminDashboard() {
     setSaving(true);
     setMessage(null);
     
-    // Simple validation (Bug #2 improvement)
     if (!config.chave_pix.trim()) {
       setMessage({ type: 'error', text: 'Chave PIX é obrigatória.' });
       setSaving(false);
@@ -86,7 +87,7 @@ export default function AdminDashboard() {
         updatedAt: serverTimestamp()
       });
       setMessage({ type: 'success', text: 'Configurações salvas com sucesso!' });
-      setIsInitialized(false); // Enable one-time re-sync from server source of truth
+      setIsInitialized(false);
       setTimeout(() => setMessage(null), 3000);
     } catch (err: any) {
       console.error(err);
@@ -103,14 +104,13 @@ export default function AdminDashboard() {
       return;
     }
 
-    if (!newAdminEmail || !newAdminPass || !newAdminName) {
+    if (!newAdminEmail || !newAdminName) {
       setMessage({ type: 'error', text: 'Preencha todos os campos do novo administrador.' });
       return;
     }
 
     setSaving(true);
     try {
-      // Logic: Invitations collection (workaround for Auth limitations in frontend)
       await setDoc(doc(db, 'admins_invitations', newAdminEmail.toLowerCase()), {
         email: newAdminEmail.toLowerCase(),
         username: newAdminName,
@@ -120,7 +120,6 @@ export default function AdminDashboard() {
 
       setMessage({ type: 'success', text: 'Convite enviado! O usuário deve fazer login com este e-mail.' });
       setNewAdminEmail('');
-      setNewAdminPass('');
       setNewAdminName('');
     } catch (err: unknown) {
       console.error(err);
@@ -134,265 +133,361 @@ export default function AdminDashboard() {
     if (uid === auth.currentUser?.uid) return;
     try {
       await apiRemoveAdmin(uid);
+      setMessage({ type: 'success', text: 'Administrador removido com sucesso.' });
+      setTimeout(() => setMessage(null), 3000);
     } catch (err: unknown) {
       console.error(err);
       setMessage({ type: 'error', text: 'Erro ao remover administrador.' });
     }
   };
 
-  if (loading) return <div className="h-full flex items-center justify-center"><div className="w-10 h-10 border-4 border-pix-purple border-t-transparent rounded-full animate-spin"></div></div>;
+  if (loading) {
+    return (
+      <div className="h-full flex items-center justify-center">
+        <div className="w-10 h-10 border-4 border-[var(--color-pix-purple)] border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   return (
-    <div className="flex-1 w-full flex flex-col space-y-6 px-4 py-8 max-w-6xl mx-auto">
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 shrink-0 px-2 lg:px-0">
+    <div className="flex-1 w-full max-w-6xl mx-auto px-4 py-12 flex flex-col gap-8">
+      {/* Header Section */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 px-2 lg:px-0">
         <div>
-          <div className="flex items-center gap-2 mb-1">
-            <div className="w-1 h-6 bg-pix-purple rounded-full" />
-            <h1 className="text-2xl font-bold text-slate-800">Painel Administrativo</h1>
+          <div className="flex items-center gap-2 mb-2">
+            <h1 className="text-2xl font-extrabold text-[var(--text-primary)]">Painel Administrativo</h1>
           </div>
-          <p className="text-slate-500 text-sm pl-3">Gerencie as configurações do seu sistema PIX</p>
+          <p className="text-[var(--text-secondary)] text-[13px]">Configurações da sua plataforma de pagamentos GeraPix</p>
         </div>
-        <div className="flex items-center gap-2 px-3 py-1 bg-pix-purple/10 text-pix-purple rounded-full text-[10px] font-bold uppercase tracking-wider self-start sm:self-auto">
-          <UserCheck className="w-3.5 h-3.5" />
-          {countAdmins} / 3 Admins
+        
+        <div className="flex items-center gap-2 px-4 py-2 bg-[var(--surface-2)] text-[var(--color-pix-purple)] rounded-full text-[13px] font-bold self-start">
+          <UserCheck className="w-4 h-4" />
+          {countAdmins} / 3 Administradores
         </div>
       </div>
 
-      {message && (
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
+      {/* Tabs Navigation */}
+      <div className="flex gap-1 p-1 bg-[var(--surface-2)] rounded-[var(--radius-md)] w-fit mx-2 lg:mx-0">
+        <button 
+          onClick={() => setActiveTab('config')}
           className={cn(
-            "p-3 mx-2 lg:mx-0 rounded-xl flex items-center gap-3 border shadow-sm shrink-0",
-            message.type === 'success' ? "bg-pix-green/10 border-pix-green/20 text-pix-green" : 
-            message.type === 'error' ? "bg-red-50 border-red-100 text-red-600" :
-            "bg-blue-50 border-blue-100 text-blue-600"
+            "flex items-center gap-2 px-6 py-2.5 rounded-[var(--radius-sm)] text-[13px] font-bold transition-all",
+            activeTab === 'config' ? "bg-white text-[var(--color-pix-purple)] shadow-sm" : "text-[var(--text-tertiary)] hover:text-[var(--text-secondary)]"
           )}
         >
-          {message.type === 'success' ? <CheckCircle className="w-4 h-4 shrink-0" /> : <AlertCircle className="w-4 h-4 shrink-0" />}
-          <p className="font-semibold text-xs">{message.text}</p>
-        </motion.div>
-      )}
+          <Settings className="w-4 h-4" />
+          Configurações
+        </button>
+        <button 
+          onClick={() => setActiveTab('transactions')}
+          className={cn(
+            "flex items-center gap-2 px-6 py-2.5 rounded-[var(--radius-sm)] text-[13px] font-bold transition-all",
+            activeTab === 'transactions' ? "bg-white text-[var(--color-pix-purple)] shadow-sm" : "text-[var(--text-tertiary)] hover:text-[var(--text-secondary)]"
+          )}
+        >
+          <History className="w-4 h-4" />
+          Transações
+        </button>
+        <button 
+          onClick={() => setActiveTab('team')}
+          className={cn(
+            "flex items-center gap-2 px-6 py-2.5 rounded-[var(--radius-sm)] text-[13px] font-bold transition-all",
+            activeTab === 'team' ? "bg-white text-[var(--color-pix-purple)] shadow-sm" : "text-[var(--text-tertiary)] hover:text-[var(--text-secondary)]"
+          )}
+        >
+          <Users className="w-4 h-4" />
+          Equipe
+        </button>
+      </div>
 
-      <div className="grid lg:grid-cols-3 gap-6 flex-1 px-2 lg:px-0 pb-12">
-        {/* PIX Settings */}
-        <div className="lg:col-span-2 space-y-6">
-          <section className="pix-card">
-            <div className="h-0.5 w-full bg-gradient-to-r from-pix-purple/60 to-transparent" />
-            <div className="p-4 border-b border-slate-100 flex items-center gap-2">
-              <Settings className="w-5 h-5 text-pix-purple" />
-              <h2 className="font-bold text-slate-800">Configuração das Chaves PIX (Recebedor)</h2>
-            </div>
-            <form onSubmit={handleSaveConfig} className="p-5 space-y-4">
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-700">Tipo de Chave</label>
-                  <select 
-                    value={config.tipo_chave}
-                    onChange={(e) => setConfig({ ...config, tipo_chave: e.target.value as PixKeyType })}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-pix-purple/20 focus:shadow-[0_0_0_3px_rgba(112,0,255,0.08)] outline-none transition-all"
-                  >
-                    <option value="cpf_cnpj">CPF/CNPJ</option>
-                    <option value="email">E-mail</option>
-                    <option value="telefone">Telefone</option>
-                    <option value="aleatoria">Chave Aleatória</option>
-                  </select>
-                </div>
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-700">Chave PIX</label>
-                  <input 
-                    type="text"
-                    placeholder={
-                      config.tipo_chave === 'email' ? 'exemplo@email.com' :
-                      config.tipo_chave === 'telefone' ? '+55 (XX) XXXXX-XXXX' :
-                      'Insira sua chave correspondente'
-                    }
-                    value={config.chave_pix}
-                    onChange={(e) => setConfig({ ...config, chave_pix: e.target.value })}
-                    required
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-pix-purple/20 focus:shadow-[0_0_0_3px_rgba(112,0,255,0.08)] outline-none transition-all"
-                  />
-                </div>
-              </div>
+      {/* Notification Toast */}
+      <AnimatePresence>
+        {message && (
+          <motion.div 
+            initial={{ opacity: 0, y: -20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            className={cn(
+              "toast mx-2 lg:mx-0",
+              message.type === 'success' ? "border-l-[var(--color-success)] text-[var(--color-success)]" : 
+              message.type === 'error' ? "border-l-[var(--color-error)] text-[var(--color-error)]" :
+              "border-l-[var(--color-info)] text-[var(--color-info)]"
+            )}
+          >
+            {message.type === 'success' ? <CheckCircle className="w-5 h-5 shrink-0" /> : <AlertCircle className="w-5 h-5 shrink-0" />}
+            <span className="font-bold text-[13px]">{message.text}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-              <div className="grid sm:grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-700">Identificador (TXID)</label>
-                  <input 
-                    type="text"
-                    maxLength={25}
-                    value={config.identificador}
-                    onChange={(e) => setConfig({ ...config, identificador: e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '') })}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-pix-purple/20 focus:shadow-[0_0_0_3px_rgba(112,0,255,0.08)] outline-none transition-all"
-                  />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-700">Cidade do Recebedor (PIX)</label>
-                  <input 
-                    type="text"
-                    maxLength={15}
-                    value={config.merchant_city}
-                    onChange={(e) => setConfig({ ...config, merchant_city: e.target.value })}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-pix-purple/20 focus:shadow-[0_0_0_3px_rgba(112,0,255,0.08)] outline-none transition-all"
-                  />
-                </div>
-              </div>
-
-              <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
-                <div className="flex items-center gap-2 mb-3">
-                  <UserCheck className="w-4 h-4 text-pix-purple" />
-                  <h3 className="text-sm font-bold text-slate-800">Identidade do Estabelecimento (Visual)</h3>
-                </div>
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-700">Nome da Loja (Exibição no App)</label>
-                  <input 
-                    type="text"
-                    maxLength={25}
-                    value={config.merchant_name}
-                    onChange={(e) => setConfig({ ...config, merchant_name: e.target.value })}
-                    className="w-full bg-white border border-slate-200 rounded-xl px-4 py-2 text-sm focus:ring-2 focus:ring-pix-purple/20 focus:shadow-[0_0_0_3px_rgba(112,0,255,0.08)] outline-none transition-all"
-                  />
-                </div>
-              </div>
-
-              <button
-                type="submit"
-                disabled={saving}
-                className="w-full flex items-center justify-center gap-2 bg-pix-purple text-white font-bold py-3 rounded-xl transition-all disabled:opacity-50 active:scale-95"
-                style={{ boxShadow: 'var(--shadow-purple)' }}
-              >
-                {saving ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : <Save className="w-5 h-5" />}
-                Salvar Todas as Configurações
-              </button>
-            </form>
-          </section>
-
-          {/* Transaction History Improvement #3 */}
-          <section className="pix-card">
-            <div className="h-0.5 w-full bg-gradient-to-r from-pix-purple/60 to-transparent" />
-            <div className="p-4 border-b border-slate-100 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Clock className="w-5 h-5 text-pix-purple" />
-                <h2 className="font-bold text-slate-800">Últimas Transações</h2>
-              </div>
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest bg-slate-50 px-2 py-1 rounded">
-                Últimos 60 dias · {transactions.length} registros
-              </span>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-left">
-                <thead className="bg-slate-50 border-b border-slate-100">
-                  <tr>
-                    <th className="px-4 py-3 text-[10px] font-bold text-slate-400 uppercase">Data/Hora</th>
-                    <th className="px-4 py-3 text-[10px] font-bold text-slate-400 uppercase">ID Transação</th>
-                    <th className="px-4 py-3 text-[10px] font-bold text-slate-400 uppercase text-right">Valor</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-50">
-                  {transactions.length === 0 ? (
-                    <tr>
-                      <td colSpan={3} className="px-4 py-8 text-center text-slate-400 text-xs italic">Nenhuma transação registrada</td>
-                    </tr>
-                  ) : (
-                    transactions.map(tx => (
-                      <tr key={tx.id} 
-                        className={cn(
-                          "hover:bg-slate-50/70 transition-colors",
-                          (!tx.amount || tx.amount === 0) && "bg-amber-50/30"
-                        )}
-                      >
-                        <td className="px-4 py-3 text-[11px] text-slate-600 font-medium">
-                          {tx.timestamp?.toDate().toLocaleString('pt-BR')}
-                        </td>
-                        <td className="px-4 py-3 text-[11px] font-mono text-slate-500 uppercase">
-                          {tx.identificador}
-                        </td>
-                        <td className="px-4 py-3 text-[11px] font-bold text-right">
-                          {tx.amount > 0
-                            ? <span className="text-slate-800">R$ {tx.amount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
-                            : <span className="text-amber-600 text-[10px] font-bold uppercase tracking-wide">Valor livre</span>
+      <div className="flex-1 px-2 lg:px-0">
+        {activeTab === 'config' && (
+          <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="space-y-8">
+            <div className="card">
+              <div className="card-accent" />
+              <div className="p-8 space-y-8">
+                <div>
+                  <h2 className="section-title">Dados do Recebedor</h2>
+                  <form onSubmit={handleSaveConfig} className="space-y-6">
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div>
+                        <label htmlFor="tipo_chave" className="label-sm">Tipo de Chave PIX</label>
+                        <select 
+                          id="tipo_chave"
+                          value={config.tipo_chave}
+                          onChange={(e) => setConfig({ ...config, tipo_chave: e.target.value as PixKeyType })}
+                          className="field"
+                        >
+                          <option value="cpf_cnpj">CPF ou CNPJ</option>
+                          <option value="email">E-mail</option>
+                          <option value="telefone">Telefone</option>
+                          <option value="aleatoria">Chave Aleatória</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label htmlFor="chave_pix" className="label-sm">Chave PIX</label>
+                        <input 
+                          id="chave_pix"
+                          type="text"
+                          placeholder={
+                            config.tipo_chave === 'email' ? 'exemplo@email.com' :
+                            config.tipo_chave === 'telefone' ? '+55 (XX) XXXXX-XXXX' :
+                            'Sua chave PIX'
                           }
+                          value={config.chave_pix}
+                          onChange={(e) => setConfig({ ...config, chave_pix: e.target.value })}
+                          required
+                          className="field"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div>
+                        <label htmlFor="identificador" className="label-sm">Identificador (TXID)</label>
+                        <input 
+                          id="identificador"
+                          type="text"
+                          maxLength={25}
+                          value={config.identificador}
+                          onChange={(e) => setConfig({ ...config, identificador: e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '') })}
+                          className="field uppercase"
+                          placeholder="EX: GERAPIX01"
+                        />
+                        <p className="helper-text">Identificador opcional da transação (Apenas letras e números)</p>
+                      </div>
+                      <div>
+                        <label htmlFor="merchant_city" className="label-sm">Cidade do Recebedor</label>
+                        <input 
+                          id="merchant_city"
+                          type="text"
+                          maxLength={15}
+                          value={config.merchant_city}
+                          onChange={(e) => setConfig({ ...config, merchant_city: e.target.value.toUpperCase() })}
+                          className="field uppercase"
+                          placeholder="EX: SAO PAULO"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="pt-6 border-t border-[var(--surface-border)]">
+                      <div className="mb-6">
+                        <h3 className="section-title">Identidade Visual</h3>
+                        <p className="text-[13px] text-[var(--text-secondary)] -mt-4 mb-4">Como seu estabelecimento aparecerá para os clientes.</p>
+                      </div>
+                      
+                      <div className="space-y-1">
+                        <div className="flex justify-between items-center mb-1.5">
+                          <label htmlFor="merchant_name" className="label-sm mb-0">Nome do Estabelecimento</label>
+                          <span className={cn(
+                            "text-[11px] font-bold transition-colors",
+                            (config.merchant_name?.length || 0) >= 30 ? "text-[var(--color-error)]" : 
+                            (config.merchant_name?.length || 0) >= 28 ? "text-[var(--color-warning)]" : 
+                            "text-[var(--text-tertiary)]"
+                          )}>
+                            {config.merchant_name?.length || 0}/30
+                          </span>
+                        </div>
+                        <input 
+                          id="merchant_name"
+                          type="text"
+                          maxLength={30}
+                          placeholder="Ex: Pizzaria do João — Copacabana"
+                          value={config.merchant_name || ''}
+                          onChange={(e) => setConfig({ ...config, merchant_name: e.target.value })}
+                          className="field"
+                        />
+                        <p className="helper-text">Nome que aparece no topo da tela do cliente.</p>
+                      </div>
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={saving}
+                      className="btn-primary w-full mt-4"
+                    >
+                      {saving ? (
+                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      ) : (
+                        <>
+                          <Save className="w-5 h-5" />
+                          Salvar Todas as Configurações
+                        </>
+                      )}
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {activeTab === 'transactions' && (
+          <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="card">
+            <div className="card-accent" />
+            <div className="p-8">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+                <h2 className="section-title mb-0">Relatório de Transações</h2>
+                <div className="flex items-center gap-2 text-[11px] font-bold text-[var(--text-tertiary)] uppercase tracking-widest bg-[var(--surface-1)] px-3 py-1.5 rounded-lg border border-[var(--surface-border)]">
+                  <Clock className="w-3 h-3" />
+                  Últimos 60 dias · {transactions.length} registros
+                </div>
+              </div>
+              
+              <div className="overflow-x-auto -mx-8">
+                <table className="w-full">
+                  <thead>
+                    <tr className="bg-[var(--surface-1)] border-y border-[var(--surface-border)]">
+                      <th className="px-8 py-4 text-[10px] font-extrabold text-[var(--text-tertiary)] uppercase text-left tracking-wider">Data e Hora</th>
+                      <th className="px-8 py-4 text-[10px] font-extrabold text-[var(--text-tertiary)] uppercase text-left tracking-wider">Identificador (TXID)</th>
+                      <th className="px-8 py-4 text-[10px] font-extrabold text-[var(--text-tertiary)] uppercase text-right tracking-wider">Valor Recebido</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-[var(--surface-border)]">
+                    {transactions.length === 0 ? (
+                      <tr>
+                        <td colSpan={3} className="px-8 py-16 text-center text-[var(--text-tertiary)] italic text-[13px]">
+                          Nenhuma transação registrada no período.
                         </td>
                       </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </section>
-        </div>
-
-        {/* User Management */}
-        <div className="space-y-6">
-          <section className="pix-card">
-            <div className="h-0.5 w-full bg-gradient-to-r from-pix-purple/60 to-transparent" />
-            <div className="p-4 border-b border-slate-100 flex items-center gap-2">
-              <Users className="w-5 h-5 text-pix-purple" />
-              <h2 className="font-bold text-slate-800">Convidar Admin</h2>
-            </div>
-            <form onSubmit={handleAddAdmin} className="p-4 space-y-3">
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold text-slate-500 uppercase ml-1">E-mail</label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
-                  <input 
-                    type="email"
-                    placeholder="E-mail do administrador"
-                    value={newAdminEmail}
-                    onChange={(e) => setNewAdminEmail(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 py-2 text-xs outline-none focus:border-pix-purple focus:ring-2 focus:ring-pix-purple/10 focus:shadow-[0_0_0_3px_rgba(112,0,255,0.08)] transition-all"
-                  />
-                </div>
+                    ) : (
+                      transactions.map(tx => (
+                        <tr key={tx.id} className="hover:bg-[var(--surface-1)]/50 transition-colors">
+                          <td className="px-8 py-4 text-[13px] text-[var(--text-secondary)] font-medium">
+                            {tx.timestamp?.toDate().toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                          </td>
+                          <td className="px-8 py-4 text-[13px] font-mono text-[var(--text-tertiary)] uppercase">
+                            {tx.identificador || 'N/A'}
+                          </td>
+                          <td className="px-8 py-4 text-right">
+                            {tx.amount > 0 ? (
+                              <span className="font-extrabold text-[15px] text-[var(--text-primary)]">
+                                R$ {tx.amount.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                              </span>
+                            ) : (
+                              <span className="text-[11px] font-bold text-[var(--color-warning)] uppercase tracking-wider bg-[var(--color-warning)]/5 px-2 py-1 rounded">
+                                Valor Livre
+                              </span>
+                            )}
+                          </td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
               </div>
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold text-slate-500 uppercase ml-1">Nome</label>
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
-                  <input 
-                    type="text"
-                    placeholder="Nome de exibição"
-                    value={newAdminName}
-                    onChange={(e) => setNewAdminName(e.target.value)}
-                    className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-4 py-2 text-xs outline-none focus:border-pix-purple focus:ring-2 focus:ring-pix-purple/10 focus:shadow-[0_0_0_3px_rgba(112,0,255,0.08)] transition-all"
-                  />
-                </div>
-              </div>
-              <button
-                type="submit"
-                disabled={saving || countAdmins >= 3}
-                className="w-full bg-slate-900 text-white font-bold py-3 rounded-xl text-xs hover:bg-slate-800 transition-all disabled:opacity-50 active:scale-95 shadow-sm"
-              >
-                Enviar Convite
-              </button>
-            </form>
-          </section>
-
-          <section className="pix-card">
-            <div className="h-0.5 w-full bg-gradient-to-r from-pix-purple/60 to-transparent" />
-            <div className="p-4 border-b border-slate-100 flex items-center gap-2">
-              <UserCheck className="w-5 h-5 text-pix-purple" />
-              <h2 className="font-bold text-slate-800">Equipe Ativa</h2>
             </div>
-            <div className="p-3 space-y-3">
-              {admins.map(admin => (
-                <div key={admin.uid} className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100">
-                  <div className="min-w-0">
-                    <p className="font-bold text-slate-800 text-xs truncate">{admin.username}</p>
-                    <p className="text-[10px] text-slate-500 truncate">{admin.email}</p>
+          </motion.div>
+        )}
+
+        {activeTab === 'team' && (
+          <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="grid lg:grid-cols-2 gap-8">
+            <div className="card">
+              <div className="card-accent" />
+              <div className="p-8">
+                <h2 className="section-title">Convidar Novo Administrador</h2>
+                <p className="text-[13px] text-[var(--text-secondary)] -mt-4 mb-8">O convidado terá acesso total ao painel administrativo.</p>
+                
+                <form onSubmit={handleAddAdmin} className="space-y-6">
+                  <div>
+                    <label htmlFor="new_admin_email" className="label-sm">E-mail</label>
+                    <div className="relative">
+                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-tertiary)]" />
+                      <input 
+                        id="new_admin_email"
+                        type="email"
+                        placeholder="email@exemplo.com"
+                        value={newAdminEmail}
+                        onChange={(e) => setNewAdminEmail(e.target.value)}
+                        className="field pl-11"
+                        required
+                      />
+                    </div>
                   </div>
-                  {admin.uid !== auth.currentUser?.uid && (
-                    <button 
-                      onClick={() => removeAdmin(admin.uid)}
-                      className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors shrink-0"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
+                  <div>
+                    <label htmlFor="new_admin_name" className="label-sm">Nome de Exibição</label>
+                    <div className="relative">
+                      <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-tertiary)]" />
+                      <input 
+                        id="new_admin_name"
+                        type="text"
+                        placeholder="Nome Completo"
+                        value={newAdminName}
+                        onChange={(e) => setNewAdminName(e.target.value)}
+                        className="field pl-11"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={saving || countAdmins >= 3}
+                    className="btn-primary w-full"
+                  >
+                    Enviar Convite
+                  </button>
+                  {countAdmins >= 3 && (
+                    <p className="helper-text text-[var(--color-error)] text-center font-bold">
+                      Limite de 3 administradores atingido para seu plano.
+                    </p>
                   )}
-                </div>
-              ))}
+                </form>
+              </div>
             </div>
-          </section>
-        </div>
+
+            <div className="card">
+              <div className="card-accent" />
+              <div className="p-8">
+                <h2 className="section-title">Equipe de Gestão</h2>
+                <div className="space-y-4">
+                  {admins.map(admin => (
+                    <div key={admin.uid} className="flex items-center justify-between p-4 bg-[var(--surface-1)] rounded-[var(--radius-md)] border border-[var(--surface-border)]">
+                      <div className="min-w-0">
+                        <p className="font-bold text-[var(--text-primary)] text-[14px] truncate">{admin.username}</p>
+                        <p className="text-[12px] text-[var(--text-tertiary)] truncate">{admin.email}</p>
+                      </div>
+                      
+                      {admin.uid !== auth.currentUser?.uid ? (
+                        <button 
+                          onClick={() => removeAdmin(admin.uid)}
+                          className="btn-ghost btn-sm group"
+                          aria-label="Remover administrador"
+                          title="Remover administrador"
+                        >
+                          <Trash2 className="w-4 h-4 transition-colors group-hover:text-[var(--color-error)]" />
+                        </button>
+                      ) : (
+                        <span className="text-[10px] font-bold text-[var(--color-pix-purple)] bg-[var(--color-pix-purple)]/5 px-2 py-1 rounded uppercase tracking-wider">
+                          Você
+                        </span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
       </div>
     </div>
   );

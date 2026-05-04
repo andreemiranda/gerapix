@@ -2,7 +2,7 @@ import { useState, useEffect, FormEvent, ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { usePixConfig } from '../context/PixConfigContext';
 import { motion } from 'motion/react';
-import { QrCode, AlertCircle, ShoppingBag, LayoutDashboard } from 'lucide-react';
+import { QrCode, AlertCircle, ShoppingBag, LayoutDashboard, ShieldCheck, Zap, Heart } from 'lucide-react';
 import { auth, db } from '../lib/firebase';
 import { onAuthStateChanged } from 'firebase/auth';
 import { doc, getDoc } from 'firebase/firestore';
@@ -31,7 +31,6 @@ export default function Home() {
     return () => unsub();
   }, []);
 
-  // Reset value when returning home (Bug #6)
   useEffect(() => {
     setAmount('');
   }, []);
@@ -40,7 +39,6 @@ export default function Home() {
     e.preventDefault();
     if (!config) return;
 
-    // Convert formatted string "0,00" to number
     const numericAmount = parseFloat(amount.replace(/\./g, '').replace(',', '.')) || 0;
     
     navigate('/resultado', { 
@@ -55,7 +53,6 @@ export default function Home() {
     const rawValue = e.target.value.replace(/\D/g, '');
     const numberValue = parseInt(rawValue, 10) || 0;
     
-    // Format as 0,00 style
     const formatted = new Intl.NumberFormat('pt-BR', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2
@@ -67,143 +64,134 @@ export default function Home() {
   if (loading) {
     return (
       <div className="h-full flex items-center justify-center">
-        <div className="w-10 h-10 border-4 border-pix-purple border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-10 h-10 border-4 border-[var(--color-pix-purple)] border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
   }
 
   if (!config || !config.chave_pix) {
     return (
-      <div className="flex-1 w-full flex flex-col items-center justify-center p-4 bg-slate-50 font-sans py-12">
+      <div className="flex-1 w-full flex flex-col items-center justify-center p-4 bg-[var(--surface-1)] py-12 relative overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 pointer-events-none opacity-[0.4]" style={{ backgroundImage: 'radial-gradient(var(--surface-border) 1px, transparent 1px)', backgroundSize: '24px 24px' }}></div>
+        
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="pix-card p-8 w-full max-w-sm text-center"
+          className="card max-w-sm w-full relative z-10"
         >
-          <div className="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
-            <AlertCircle className="w-8 h-8" />
+          <div className="card-accent" />
+          <div className="p-8 text-center">
+            <div className="w-16 h-16 bg-[var(--color-error)]/10 text-[var(--color-error)] rounded-full flex items-center justify-center mx-auto mb-6">
+              <AlertCircle className="w-8 h-8" />
+            </div>
+            <h2 className="text-xl font-extrabold mb-3 text-[var(--text-primary)]">PIX não configurado</h2>
+            <p className="text-[var(--text-secondary)] mb-8 text-[13px] leading-relaxed">
+              O sistema ainda não possui uma chave PIX configurada para receber pagamentos.
+            </p>
+            
+            <button
+              onClick={() => navigate(isAdmin ? '/admin' : '/login')}
+              className="btn-primary w-full"
+            >
+              {isAdmin ? (
+                <>
+                  <LayoutDashboard className="w-5 h-5" />
+                  Configurar no Painel
+                </>
+              ) : (
+                'Acessar Dashboard'
+              )}
+            </button>
           </div>
-          <h2 className="text-xl font-bold mb-2 text-slate-800">PIX não configurado</h2>
-          <p className="text-slate-500 mb-6 text-sm">
-            O sistema ainda não possui uma chave PIX configurada para receber pagamentos.
-          </p>
-          
-          <button
-            onClick={() => navigate(isAdmin ? '/admin' : '/login')}
-            className="w-full bg-slate-800 text-white font-bold py-3 rounded-xl hover:bg-slate-700 transition-colors flex items-center justify-center gap-2"
-          >
-            {isAdmin ? (
-              <>
-                <LayoutDashboard className="w-4 h-4" />
-                Configurar no Painel
-              </>
-            ) : (
-              'Acessar como Administrador'
-            )}
-          </button>
         </motion.div>
       </div>
     );
   }
 
   return (
-    <div className="flex-1 w-full flex flex-col items-center justify-center p-4 py-12"
-      style={{ background: 'radial-gradient(ellipse 80% 60% at 50% 0%, rgba(112,0,255,0.05) 0%, transparent 70%), #f8f9fc' }}
-    >
+    <div className="flex-1 w-full flex flex-col items-center justify-center p-4 py-12 bg-[var(--surface-1)] relative overflow-hidden">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 pointer-events-none opacity-[0.4]" style={{ backgroundImage: 'radial-gradient(var(--surface-border) 1px, transparent 1px)', backgroundSize: '24px 24px' }}></div>
+
       <motion.div 
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        className="w-full max-w-sm"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="w-full max-w-[400px] relative z-10"
       >
-        {/* Store Info UX #3 */}
-        <div className="mb-6 flex flex-col items-center">
-          <div className="flex items-center gap-2 px-4 py-2 glass-badge rounded-full mb-2">
-            <span className="w-2 h-2 rounded-full bg-pix-green animate-pulse" />
-            <ShoppingBag className="w-4 h-4 text-pix-purple" />
-            <span className="text-sm font-bold text-slate-800">{config?.merchant_name || 'Estabelecimento'}</span>
+        {/* Establishment Badge */}
+        <div className="mb-8 flex justify-center">
+          <div className="flex items-center gap-3 px-5 py-2.5 bg-white border border-[var(--surface-border)] rounded-full shadow-sm">
+            <div className="relative">
+              <span className="absolute inset-0 rounded-full bg-[var(--color-pix-green)] animate-ping opacity-20"></span>
+              <div className="w-2.5 h-2.5 rounded-full bg-[var(--color-pix-green)] relative z-10"></div>
+            </div>
+            <ShoppingBag className="w-4 h-4 text-[var(--color-pix-purple)]" />
+            <span className="text-[14px] font-bold text-[var(--text-primary)]">{config?.merchant_name || 'GeraPix Store'}</span>
           </div>
         </div>
 
-        <div className="pix-card relative">
-          <div className="h-1 w-full bg-gradient-to-r from-pix-purple via-violet-400 to-pix-green" />
-          <div className="p-6 sm:p-8">
-            <div className="flex items-center gap-4 mb-6 sm:mb-8">
-              <div className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
-                style={{ background: 'linear-gradient(135deg, rgba(112,0,255,0.15), rgba(112,0,255,0.05))' }}
-              >
-                <QrCode className="w-6 h-6 text-pix-purple" />
+        <div className="card">
+          <div className="card-accent" />
+          <div className="p-8">
+            <div className="flex items-center gap-4 mb-10">
+              <div className="w-14 h-14 bg-[var(--color-pix-purple)]/5 rounded-2xl flex items-center justify-center shrink-0 border border-[var(--surface-border)]">
+                <QrCode className="w-7 h-7 text-[var(--color-pix-purple)]" />
               </div>
-              <div className="min-w-0">
-                <h1 className="text-xl sm:text-2xl font-black text-slate-800 truncate">Gerar PIX</h1>
-                <p className="text-slate-500 text-xs sm:text-sm truncate">Informe o valor da cobrança</p>
+              <div>
+                <h1 className="text-xl font-extrabold text-[var(--text-primary)]">Gerar Pagamento</h1>
+                <p className="text-[var(--text-secondary)] text-[13px]">Informe o valor do PIX</p>
               </div>
             </div>
 
-            <form onSubmit={handleGenerate} className="space-y-4 sm:space-y-6">
+            <form onSubmit={handleGenerate} className="space-y-8">
               <div className="space-y-2">
-                <label className="text-xs sm:text-sm font-bold text-slate-700 ml-1">
-                  Valor Total
-                </label>
+                <label htmlFor="amount" className="label-sm ml-1">Valor da Cobrança</label>
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold text-lg">
-                    R$
-                  </span>
+                  <span className="absolute left-5 top-1/2 -translate-y-1/2 text-[var(--text-tertiary)] font-bold text-lg">R$</span>
                   <input
+                    id="amount"
                     type="text"
                     inputMode="numeric"
                     placeholder="0,00"
                     value={amount}
                     onChange={handleAmountChange}
-                    className="w-full bg-slate-50/80 border border-slate-200 rounded-xl px-12 py-4 text-2xl font-bold
-                      focus:outline-none focus:ring-2 focus:ring-pix-purple/25 focus:border-pix-purple/50
-                      focus:bg-white transition-all shadow-inner"
+                    className="field pl-14 py-5 text-2xl font-extrabold tracking-tight"
                   />
                 </div>
-                <p className="text-[9px] sm:text-[10px] text-slate-400 font-bold uppercase tracking-wider ml-1">
-                  Deixe em branco para valor livre
-                </p>
+                <p className="helper-text ml-1">Deixe em branco para o cliente digitar o valor.</p>
               </div>
 
-              <button
-                type="submit"
-                className="w-full bg-pix-purple text-white font-bold py-4 rounded-xl
-                  hover:-translate-y-0.5 hover:shadow-lg active:scale-[0.98]
-                  transition-all flex items-center justify-center gap-2 group"
-                style={{ boxShadow: 'var(--shadow-purple)' }}
-              >
-                <span className="text-sm sm:text-base">Gerar QR Code PIX</span>
-                <svg
-                  viewBox="0 0 24 24"
-                  className="w-4 h-4 sm:w-5 sm:h-5 fill-current group-hover:rotate-12 transition-transform"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-2.12c-1.39-.17-1.89-1.07-1.93-1.85h.92c.03.3.18.91.95.91.81 0 .96-.34.96-.54 0-.41-.53-.54-.93-.72-.45-.19-1-.44-1-1.12 0-.61.42-1.07 1-1.22V8.5h1v2.12c1.39.17 1.89-1.07 1.93-1.85h-.92c-.03-.3-.18-.91-.95-.91-.81 0-.96.34-.96.54 0 .41.53.54.91.72.45.19 1 .44 1 1.12 0 .61-.42 1.07-1 1.22v1.84h-1z" />
-                </svg>
+              <button type="submit" className="btn-primary w-full group">
+                <QrCode className="w-5 h-5 transition-transform group-hover:scale-110 group-hover:rotate-6" />
+                Gerar QR Code PIX
               </button>
             </form>
           </div>
         </div>
 
-        <div className="mt-8 glass-badge rounded-2xl px-6 py-3 flex items-center justify-center gap-8">
-          <div className="flex flex-col items-center gap-1">
-            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-pix-green/10 flex items-center justify-center">
-              <svg className="w-4 h-4 sm:w-5 sm:h-5 text-pix-green" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-              </svg>
+        {/* Trust Badges */}
+        <div className="mt-12 grid grid-cols-3 gap-4">
+          <div className="flex flex-col items-center text-center gap-2">
+            <div className="w-11 h-11 rounded-xl bg-white border border-[var(--surface-border)] shadow-sm flex items-center justify-center">
+              <ShieldCheck className="w-5 h-5 text-[var(--color-pix-green)]" />
             </div>
-            <span className="text-[8px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-widest">Seguro</span>
+            <span className="text-[10px] font-extrabold text-[var(--text-tertiary)] uppercase tracking-wider">Seguro</span>
           </div>
-          <div className="flex flex-col items-center gap-1">
-            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-pix-purple/10 flex items-center justify-center">
-              <svg className="w-4 h-4 sm:w-5 sm:h-5 text-pix-purple" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-              </svg>
+          <div className="flex flex-col items-center text-center gap-2">
+            <div className="w-11 h-11 rounded-xl bg-white border border-[var(--surface-border)] shadow-sm flex items-center justify-center">
+              <Zap className="w-5 h-5 text-[var(--color-pix-purple)]" />
             </div>
-            <span className="text-[8px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-widest">Instantâneo</span>
+            <span className="text-[10px] font-extrabold text-[var(--text-tertiary)] uppercase tracking-wider">Instantâneo</span>
+          </div>
+          <div className="flex flex-col items-center text-center gap-2">
+            <div className="w-11 h-11 rounded-xl bg-white border border-[var(--surface-border)] shadow-sm flex items-center justify-center">
+              <Heart className="w-5 h-5 text-[var(--color-error)]" />
+            </div>
+            <span className="text-[10px] font-extrabold text-[var(--text-tertiary)] uppercase tracking-wider">Gratuito</span>
           </div>
         </div>
       </motion.div>
     </div>
   );
 }
-

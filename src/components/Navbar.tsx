@@ -1,6 +1,6 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { User } from 'firebase/auth';
-import { LogOut, Grid, Home, User as UserIcon } from 'lucide-react';
+import { LogOut, Grid, Home, User as UserIcon, Wallet } from 'lucide-react';
 import { signOut, auth } from '../lib/firebase';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -26,75 +26,71 @@ export default function Navbar({ user, isAdmin }: NavbarProps) {
   const isActive = (path: string) => location.pathname === path;
 
   return (
-    <nav className="bg-white/95 backdrop-blur-md border-b border-slate-200/60 px-4 py-4 sticky top-0 z-50 shadow-sm no-print">
-      <div className="container mx-auto max-w-4xl flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2 group">
-          <div className="w-8 h-8 rounded-lg bg-pix-purple flex items-center justify-center ring-1 ring-pix-purple/20 transition-transform group-hover:scale-105"
-               style={{ background: 'linear-gradient(135deg, #7000FF 0%, #4D00B8 100%)' }}>
-            <svg
-              viewBox="0 0 24 24"
-              className="w-5 h-5 text-white fill-current"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-2.12c-1.39-.17-1.89-1.07-1.93-1.85h.92c.03.3.18.91.95.91.81 0 .96-.34.96-.54 0-.41-.53-.54-.93-.72-.45-.19-1-.44-1-1.12 0-.61.42-1.07 1-1.22V8.5h1v2.12c1.39.17 1.89 1.07 1.93 1.85h-.92c-.03-.3-.18-.91-.95-.91-.81 0-.96.34-.96.54 0 .41.53.54.91.72.45.19 1 .44 1 1.12 0 .61-.42 1.07-1 1.22v1.84h-1z" />
-            </svg>
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/92 backdrop-blur-xl border-b border-[var(--surface-border)] h-16 flex items-center no-print overflow-hidden">
+      {/* Background Pattern */}
+      <div className="absolute inset-0 pointer-events-none opacity-[0.3]" style={{ backgroundImage: 'radial-gradient(var(--surface-border) 1px, transparent 1px)', backgroundSize: '20px 20px' }}></div>
+      
+      <div className="container mx-auto max-w-6xl px-6 flex items-center justify-between relative z-10">
+        <Link to="/" className="flex items-center gap-3 group">
+          <div className="w-10 h-10 rounded-[var(--radius-md)] bg-[var(--color-pix-purple)] flex items-center justify-center shadow-lg shadow-[var(--color-pix-purple)]/20 transition-transform group-hover:scale-105 active:scale-95">
+            <Wallet className="w-5 h-5 text-white" />
           </div>
-          <span className="text-xl font-bold tracking-tight text-slate-800">
-            Gera<span className="text-pix-purple">Pix</span>
+          <span className="text-[18px] font-extrabold text-[var(--text-primary)] tracking-tight">
+            Gera<span className="text-[var(--color-pix-purple)]">Pix</span>
           </span>
         </Link>
 
-        <div className="flex items-center gap-1 sm:gap-2">
+        <div className="flex items-center gap-1">
           <Link
             to="/"
             className={cn(
-              "p-2 rounded-xl transition-all flex items-center gap-2",
+              "px-4 py-2 rounded-[var(--radius-sm)] transition-all flex items-center gap-2 text-[14px]",
               isActive('/') 
-                ? "bg-pix-purple/8 text-pix-purple" 
-                : "text-slate-500 hover:text-pix-purple hover:bg-slate-50"
+                ? "bg-[var(--color-pix-purple)]/5 text-[var(--color-pix-purple)] font-bold" 
+                : "text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] hover:bg-[var(--surface-2)]"
             )}
           >
-            <Home className="w-5 h-5" />
-            <span className="hidden sm:inline text-sm font-bold">Início</span>
+            <Home className="w-4 h-4" />
+            <span className="hidden sm:inline">Início</span>
           </Link>
 
           {isAdmin && (
             <Link
               to="/admin"
               className={cn(
-                "p-2 rounded-xl transition-all flex items-center gap-2",
+                "px-4 py-2 rounded-[var(--radius-sm)] transition-all flex items-center gap-2 text-[14px]",
                 isActive('/admin') 
-                  ? "bg-pix-purple/8 text-pix-purple" 
-                  : "text-slate-500 hover:text-pix-purple hover:bg-slate-50"
+                  ? "bg-[var(--color-pix-purple)]/5 text-[var(--color-pix-purple)] font-bold" 
+                  : "text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] hover:bg-[var(--surface-2)]"
               )}
             >
-              <Grid className="w-5 h-5" />
-              <span className="hidden sm:inline text-sm font-bold">Painel</span>
+              <Grid className="w-4 h-4" />
+              <span className="hidden sm:inline">Dashboard</span>
             </Link>
           )}
 
-          <div className="w-px h-4 bg-slate-200 mx-1" />
+          <div className="w-[1px] h-4 bg-[var(--surface-border)] mx-2" />
 
           {user ? (
             <button
               onClick={handleLogout}
-              className="p-2 text-slate-500 hover:text-red-600 hover:bg-red-50 hover:border hover:border-red-100 rounded-xl transition-all flex items-center gap-2"
+              className="btn-ghost btn-sm text-[var(--text-tertiary)] hover:bg-[var(--color-error)]/5 hover:text-[var(--color-error)]"
             >
-              <LogOut className="w-5 h-5" />
-              <span className="hidden sm:inline text-sm font-bold">Sair</span>
+              <LogOut className="w-4 h-4" />
+              <span className="hidden sm:inline">Sair</span>
             </button>
           ) : (
             <Link
               to="/login"
               className={cn(
-                "p-2 rounded-xl transition-all flex items-center gap-2",
+                "px-4 py-2 rounded-[var(--radius-sm)] transition-all flex items-center gap-2 text-[14px]",
                 isActive('/login') 
-                  ? "bg-pix-purple/8 text-pix-purple" 
-                  : "text-slate-500 hover:text-pix-purple hover:bg-slate-50"
+                  ? "bg-[var(--color-pix-purple)]/5 text-[var(--color-pix-purple)] font-bold" 
+                  : "text-[var(--text-tertiary)] hover:text-[var(--text-secondary)] hover:bg-[var(--surface-2)]"
               )}
             >
-              <UserIcon className="w-5 h-5" />
-              <span className="hidden sm:inline text-sm font-bold">Login</span>
+              <UserIcon className="w-4 h-4" />
+              <span className="hidden sm:inline">Portal Admin</span>
             </Link>
           )}
         </div>
